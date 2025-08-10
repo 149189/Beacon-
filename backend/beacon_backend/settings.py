@@ -68,7 +68,7 @@ DATABASES = {
         'NAME': config('MYSQL_DB', default='beacon_db'),
         'USER': config('MYSQL_USER', default='root'),
         'PASSWORD': config('MYSQL_PASSWORD', default='Kaustubh@149'),
-        'HOST': config('MYSQL_HOST', default='db'),
+        'HOST': config('MYSQL_HOST', default='localhost'),
         'PORT': config('MYSQL_PORT', default='3306'),
         'OPTIONS': {
             'charset': 'utf8mb4',
@@ -99,9 +99,13 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'
+# https://docs.djangoproject.com/en/4.2/howto/static-files/
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
+# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS settings

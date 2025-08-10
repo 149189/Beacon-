@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3310:3306" # Optional, only if you need to connect from host
+    volumes:
+      - db_data:/var/lib/mysql
+
+  backend:
+    build: ./panic-backend
+    container_name: django_backend
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./panic-backend:/app
+    ports:
+      - "8001:8000" # Host:Container
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  console:
+    build: ./panic-console
+    container_name: react_console
+    command: npm start
+    volumes:
+      - ./panic-console:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+
+  mobile:
+    build:
+      context: ./panic-mobile/PanicMobile
+      dockerfile: Dockerfile
+    container_name: react_native_mobile
+    volumes:
+      - ./panic-mobile:/app
+      - /app/node_modules
+    ports:
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
+    stdin_open: true
+    tty: true
+
+volumes:
+  db_data:

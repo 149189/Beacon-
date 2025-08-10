@@ -1,0 +1,8 @@
+django 
+djangorestframework 
+channels 
+channels_redis 
+psycopg2-binary 
+python-dotenv
+mysqlclient
+pymysql

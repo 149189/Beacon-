@@ -1,112 +1,201 @@
-# 🌐 Beacon — Your Signal for Safety
+# 🚀 Beacon Full-Stack Application
 
-**Beacon** is a mobile-first personal safety platform designed to deliver rapid emergency alerts, live location tracking, and secure evidence sharing — all coordinated through a real-time operator console.
+A modern full-stack web application built with React.js frontend, Django backend, and MySQL database, all containerized with Docker.
 
----
+## 🏗️ Architecture
 
-## 🚨 The Problem
-In moments of danger, every second counts — yet:
-- Calling for help can be delayed if a phone is locked or network is weak.
-- Victims may not be able to speak or clearly describe their location.
-- Emergency services often lack timely, precise information to respond effectively.
-- There’s no standard workflow for how operators handle panic events, leading to delays or miscommunication.
+- **Frontend**: React.js with modern UI/UX
+- **Backend**: Django REST API with MySQL database
+- **Database**: MySQL 8.0
+- **Containerization**: Docker & Docker Compose
 
----
+## 📁 Project Structure
 
-## ✅ The Solution — Beacon
-Beacon empowers individuals to **send an emergency signal instantly** and gives operators **real-time situational awareness** to respond faster.
+```
+Beacon--1/
+├── frontend/                 # React.js Frontend
+│   ├── public/
+│   ├── src/
+│   ├── package.json
+│   └── Dockerfile
+├── backend/                  # Django Backend
+│   ├── beacon_backend/      # Django project
+│   ├── api/                 # API app
+│   ├── requirements.txt
+│   ├── manage.py
+│   └── Dockerfile
+├── mysql/                   # Database initialization
+│   └── init.sql
+├── docker-compose.yml       # Docker orchestration
+└── README.md
+```
 
-**Core Features (MVP)**
-- **Panic Triggers:** One-tap panic button, shake-to-alert, decoy screen.
-- **Background GPS:** Continuous location sharing with offline buffering.
-- **Media Capture:** One-touch audio/video snippet recording (uploads when online).
-- **Operator Console:** Live incident map, two-way chat/voice, SOP templates, incident logging.
-- **Consent & Privacy:** User-driven data retention policies and encrypted uploads.
+## 🚀 Quick Start
 
----
+### Prerequisites
 
-## 🛠️ Tech Stack
-**Frontend (Mobile)** — React Native (cross-platform)  
-**Backend API** — Django REST Framework + Django Channels (WebSockets)  
-**Operator Console** — React.js Web App  
-**Database** — PostgreSQL  
-**Cloud Storage** — AWS S3 / GCP Storage (Signed URLs)  
-**Auth** — JWT / Token-based authentication  
-**Monitoring** — Sentry for crash/error reporting
+- Docker
+- Docker Compose
+- Git
 
----
+### 1. Clone and Setup
 
-## 📍 Project Workflow
+```bash
+git clone <your-repo-url>
+cd Beacon--1
+```
 
-**1. User Side (Mobile App)**
-- User triggers alert via panic button, shake, or decoy screen.
-- App captures GPS + optional audio/video snippet.
-- If offline, stores data locally and uploads when connected.
+### 2. Environment Configuration
 
-**2. Backend**
-- Receives alert and stores securely with timestamps, location, and media links.
-- Pushes event to operator console in real-time via WebSockets.
-- Applies consent-based retention rules.
+Copy the example environment file and configure your database settings:
 
-**3. Operator Console**
-- Displays active events on a live map.
-- Enables two-way chat or push-to-talk with user.
-- Logs actions taken and applies predefined SOP templates.
-- Marks incident as resolved when closed.
+```bash
+cp backend/env.example backend/.env
+```
 
----
+Edit `backend/.env` with your MySQL credentials:
+```env
+MYSQL_DB=beacon_db
+MYSQL_USER=root
+MYSQL_PASSWORD=Kaustubh@149
+MYSQL_HOST=db
+MYSQL_PORT=3306
+```
 
-## 🗺️ Roadmap
+### 3. Start the Application
 
-**MVP (v0.1 — Demand Validation)**
-- [ ] Mobile panic triggers & location streaming
-- [ ] Operator console with live incident map
-- [ ] Offline buffering & sync
-- [ ] Basic SOP templates
+```bash
+docker-compose up --build
+```
 
-**Intermediate (v0.2 — Operational Rollout)**
-- [ ] Role-based operator accounts
-- [ ] Voice call integration
-- [ ] Automated nearest-responders dispatch
-- [ ] Data retention dashboard
+This will start all services:
+- **Frontend**: http://localhost:3000
+- **Backend**: http://localhost:8000
+- **Database**: localhost:3306
 
-**Advanced (v0.3 — Intelligence Layer)**
-- [ ] AI-driven threat classification (audio/video analysis)
-- [ ] Predictive location tracking during movement
-- [ ] Integration with police dispatch systems
+### 4. Access the Application
 
-**Super-Advanced (Future)**
-- [ ] Drone-based first responder support
-- [ ] Wearable integration (smartwatch panic trigger)
-- [ ] Crowd-sourced live safety monitoring
+- **Frontend**: Open http://localhost:3000 in your browser
+- **Backend API**: http://localhost:8000/api/health/
+- **Django Admin**: http://localhost:8000/admin/
 
-beacon-mobile/ # React Native app
-beacon-backend/ # Django API + WebSockets
-beacon-console/ # React web app for operators
-docs/ # Architecture diagrams, SOP guides
+## 🛠️ Development
 
+### Frontend Development
 
----
+```bash
+cd frontend
+npm install
+npm start
+```
 
-## 🔒 Privacy & Security
-- All data encrypted in transit (TLS) and at rest.
-- Signed URLs for time-limited media access.
-- User-controlled data retention settings.
-- Audit logs for all access to sensitive information.
+### Backend Development
 
----
+```bash
+cd backend
+pip install -r requirements.txt
+python manage.py runserver
+```
+
+### Database Management
+
+```bash
+# Access MySQL container
+docker exec -it beacon_mysql mysql -u root -p
+
+# Run Django migrations
+docker exec -it beacon_backend python manage.py migrate
+
+# Create superuser
+docker exec -it beacon_backend python manage.py createsuperuser
+```
+
+## 🔧 Configuration
+
+### Database Configuration
+
+The application uses MySQL with the following default settings:
+- **Database**: `beacon_db`
+- **User**: `root`
+- **Password**: `Kaustubh@149`
+- **Host**: `db` (Docker service name)
+- **Port**: `3306`
+
+### CORS Settings
+
+CORS is configured to allow all origins for development. Update `backend/beacon_backend/settings.py` for production.
+
+## 📊 API Endpoints
+
+### Health Check
+- **GET** `/api/health/` - Backend and database status
+
+## 🐳 Docker Commands
+
+```bash
+# Build and start all services
+docker-compose up --build
+
+# Start services in background
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+
+# Remove volumes (database data)
+docker-compose down -v
+
+# Rebuild specific service
+docker-compose build backend
+```
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+1. **Port already in use**: Ensure ports 3000, 8000, and 3306 are available
+2. **Database connection failed**: Wait for MySQL to fully start (may take 30-60 seconds)
+3. **Frontend not loading**: Check if backend is running and accessible
+
+### Logs
+
+```bash
+# View all logs
+docker-compose logs
+
+# View specific service logs
+docker-compose logs backend
+docker-compose logs frontend
+docker-compose logs db
+```
+
+## 🚀 Production Deployment
+
+For production deployment:
+
+1. Update `SECRET_KEY` in Django settings
+2. Set `DEBUG = False`
+3. Configure proper CORS settings
+4. Use environment variables for sensitive data
+5. Set up proper SSL/TLS certificates
+6. Configure database backups
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🤝 Contributing
-We welcome contributions from developers, designers, and security experts.
 
----
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
-## 📜 License
-Licensed under the [MIT License](LICENSE).
+## 📞 Support
 
----
+For support and questions, please open an issue in the repository.
 
-> *Beacon — Your signal for safety, anytime, anywhere.*
-
-
-## 📦 Repository Structure

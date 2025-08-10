@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: beacon_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: beacon_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Kaustubh@149
+      MYSQL_ROOT_PASSWORD: Kaustubh@149
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - beacon_network
+    command: --default-authentication-plugin=mysql_native_password
+
+  # Django Backend
+  backend:
+    build: ./backend
+    container_name: beacon_backend
+    restart: always
+    environment:
+      - MYSQL_DB=beacon_db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=Kaustubh@149
+      - MYSQL_HOST=db
+      - MYSQL_PORT=3306
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+    networks:
+      - beacon_network
+    command: >
+      sh -c "python manage.py migrate &&
+              python manage.py collectstatic --noinput &&
+              gunicorn --bind 0.0.0.0:8000 beacon_backend.wsgi:application"
+
+  # React Frontend
+  frontend:
+    build: ./frontend
+    container_name: beacon_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - beacon_network
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+
+volumes:
+  mysql_data:
+
+
+networks:
+  beacon_network:
+    driver: bridge

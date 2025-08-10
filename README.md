@@ -9,7 +9,7 @@ In moments of danger, every second counts — yet:
 - Calling for help can be delayed if a phone is locked or network is weak.
 - Victims may not be able to speak or clearly describe their location.
 - Emergency services often lack timely, precise information to respond effectively.
-- There’s no standard workflow for how operators handle panic events, leading to delays or miscommunication.
+- There's no standard workflow for how operators handle panic events, leading to delays or miscommunication.
 
 ---
 
@@ -29,10 +29,81 @@ Beacon empowers individuals to **send an emergency signal instantly** and gives 
 **Frontend (Mobile)** — React Native (cross-platform)  
 **Backend API** — Django REST Framework + Django Channels (WebSockets)  
 **Operator Console** — React.js Web App  
-**Database** — PostgreSQL  
+**Database** — MySQL  
+**Real-time Communication** — Redis + WebSockets  
 **Cloud Storage** — AWS S3 / GCP Storage (Signed URLs)  
 **Auth** — JWT / Token-based authentication  
 **Monitoring** — Sentry for crash/error reporting
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Docker and Docker Compose
+- Node.js 16+ and npm
+- Python 3.8+
+- MySQL 8.0+
+
+### 1. Clone and Setup
+```bash
+git clone https://github.com/149189/Beacon-.git
+cd Beacon-
+```
+
+### 2. Environment Configuration
+Create a `.env` file in the root directory:
+```bash
+# Backend Configuration
+MYSQL_DB=beacon_db
+MYSQL_USER=root
+MYSQL_PASSWORD=Kaustubh@149
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+
+# Frontend Configuration
+REACT_APP_MAPBOX_TOKEN=your_mapbox_token_here
+REACT_APP_BACKEND_URL=http://localhost:8001
+REACT_APP_WS_URL=ws://localhost:8001/ws/
+
+# Redis Configuration
+REDIS_HOST=localhost
+REDIS_PORT=6379
+```
+
+### 3. Database Setup
+```bash
+# Start MySQL (if not running)
+docker run -d --name beacon-mysql \
+  -e MYSQL_ROOT_PASSWORD=Kaustubh@149 \
+  -e MYSQL_DATABASE=beacon_db \
+  -p 3306:3306 \
+  mysql:8.0
+
+# Wait for MySQL to be ready, then run migrations
+cd backend
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+```
+
+### 4. Build and Run with Docker
+```bash
+# Build the images
+docker-compose build
+
+# Start all services
+docker-compose up -d
+
+# Check status
+docker-compose ps
+```
+
+### 5. Access the Application
+- **Operator Console:** http://localhost:3000
+- **Backend API:** http://localhost:8001
+- **Admin Panel:** http://localhost:8001/admin
+- **Health Check:** http://localhost:8001/api/health/
 
 ---
 
@@ -58,11 +129,11 @@ Beacon empowers individuals to **send an emergency signal instantly** and gives 
 
 ## 🗺️ Roadmap
 
-**MVP (v0.1 — Demand Validation)**
-- [ ] Mobile panic triggers & location streaming
-- [ ] Operator console with live incident map
-- [ ] Offline buffering & sync
-- [ ] Basic SOP templates
+**MVP (v0.1 — Demand Validation)** ✅
+- [x] Mobile panic triggers & location streaming
+- [x] Operator console with live incident map
+- [x] Offline buffering & sync
+- [x] Basic SOP templates
 
 **Intermediate (v0.2 — Operational Rollout)**
 - [ ] Role-based operator accounts
@@ -80,11 +151,37 @@ Beacon empowers individuals to **send an emergency signal instantly** and gives 
 - [ ] Wearable integration (smartwatch panic trigger)
 - [ ] Crowd-sourced live safety monitoring
 
-beacon-mobile/ # React Native app
-beacon-backend/ # Django API + WebSockets
-beacon-console/ # React web app for operators
-docs/ # Architecture diagrams, SOP guides
+---
 
+## 🧪 Development & Testing
+
+### Create Test Data
+```bash
+cd backend
+python create_test_incident.py
+```
+
+### Run Tests
+```bash
+# Backend tests
+cd backend
+python manage.py test
+
+# Frontend tests
+cd frontend
+npm test
+```
+
+### Development Mode
+```bash
+# Backend (with auto-reload)
+cd backend
+python manage.py runserver
+
+# Frontend (with hot reload)
+cd frontend
+npm start
+```
 
 ---
 
@@ -96,8 +193,48 @@ docs/ # Architecture diagrams, SOP guides
 
 ---
 
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**WebSocket Connection Failed**
+- Ensure Redis is running: `docker-compose ps redis`
+- Check backend logs: `docker-compose logs backend`
+
+**Database Connection Error**
+- Verify MySQL is running and accessible
+- Check environment variables in docker-compose.yml
+
+**Frontend Not Loading**
+- Check if backend is running on port 8001
+- Verify CORS settings in backend/settings.py
+
+**Map Not Displaying**
+- Set `REACT_APP_MAPBOX_TOKEN` in your environment
+- Get a free token from [Mapbox](https://www.mapbox.com/)
+
+### Logs
+```bash
+# View all logs
+docker-compose logs
+
+# View specific service logs
+docker-compose logs backend
+docker-compose logs frontend
+docker-compose logs redis
+```
+
+---
+
 ## 🤝 Contributing
 We welcome contributions from developers, designers, and security experts.
+
+### Development Guidelines
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
 ---
 
@@ -106,7 +243,26 @@ Licensed under the [MIT License](LICENSE).
 
 ---
 
+## 📦 Repository Structure
+
+```
+Beacon-/
+├── backend/                 # Django backend API
+│   ├── api/                # Core API endpoints
+│   ├── operator_console/   # Operator console app
+│   ├── beacon_backend/     # Django project settings
+│   └── requirements.txt    # Python dependencies
+├── frontend/               # React operator console
+│   ├── src/
+│   │   ├── pages/         # Page components
+│   │   └── utils/         # Utilities (WebSocket, etc.)
+│   └── package.json       # Node.js dependencies
+├── mysql/                  # Database initialization
+├── docker-compose.yml      # Docker orchestration
+└── README.md              # This file
+```
+
+---
+
 > *Beacon — Your signal for safety, anytime, anywhere.*
 
-
-## 📦 Repository Structure

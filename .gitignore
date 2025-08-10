@@ -5,6 +5,11 @@ node_modules/
 */env/
 */.env
 
+# Important React files - DO NOT IGNORE
+!frontend/public/
+!frontend/public/index.html
+!frontend/public/manifest.json
+
 # Production builds
 frontend/build/
 frontend/dist/
@@ -128,7 +133,8 @@ dist
 
 # Gatsby files
 .cache/
-public
+# Don't ignore React public folder - it contains essential files like index.html
+# public
 
 # Storybook build outputs
 .out

@@ -97,7 +97,7 @@ docs/ # Architecture diagrams, SOP guides
 ---
 
 ## 🤝 Contributing
-We welcome contributions from developers, designers, and security experts. Please read our [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before submitting pull requests.
+We welcome contributions from developers, designers, and security experts.
 
 ---
 

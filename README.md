@@ -130,10 +130,10 @@ docker-compose ps
 ## 🗺️ Roadmap
 
 **MVP (v0.1 — Demand Validation)** ✅
-- [x] Mobile panic triggers & location streaming
-- [x] Operator console with live incident map
-- [x] Offline buffering & sync
-- [x] Basic SOP templates
+- [ ] Mobile panic triggers & location streaming
+- [ ] Operator console with live incident map
+- [ ] Offline buffering & sync
+- [ ] Basic SOP templates
 
 **Intermediate (v0.2 — Operational Rollout)**
 - [ ] Role-based operator accounts

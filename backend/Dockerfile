@@ -22,6 +22,9 @@ RUN apt-get update && \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Verify channels installation
+RUN python -c "import channels; print('channels ok', getattr(channels,'__version__','?'))"
+
 # Copy project files
 COPY . .
 

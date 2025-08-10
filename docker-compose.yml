@@ -1,4 +1,14 @@
 services:
+  # Redis for WebSocket channels
+  redis:
+    image: redis:7-alpine
+    container_name: beacon_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - beacon_network
+
   # Django Backend
   backend:
     image: beacon-backend
@@ -10,10 +20,12 @@ services:
       - MYSQL_PASSWORD=Kaustubh@149
       - MYSQL_HOST=host.docker.internal
       - MYSQL_PORT=3306
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     ports:
       - "8001:8000"
-    volumes:
-      - ./backend:/app
+    depends_on:
+      - redis
     networks:
       - beacon_network
     extra_hosts:
@@ -36,6 +48,8 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+      - REACT_APP_BACKEND_URL=http://localhost:8001
+      - REACT_APP_WS_URL=ws://localhost:8001/ws/
 
 networks:
   beacon_network:

@@ -11,9 +11,11 @@ services:
 
   # Django Backend
   backend:
-    image: beacon-backend
+    build: ./backend
     container_name: beacon_backend
     restart: always
+    volumes:
+      - ./backend:/app
     environment:
       - MYSQL_DB=beacon_db
       - MYSQL_USER=root
@@ -33,7 +35,7 @@ services:
 
   # React Frontend
   frontend:
-    image: beacon-frontend
+    build: ./frontend
     container_name: beacon_frontend
     restart: always
     ports:

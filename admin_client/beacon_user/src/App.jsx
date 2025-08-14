@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import ErrorBoundary from './components/ErrorBoundary';
+import ToastProvider from './components/Toast';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import './index.css';
@@ -11,7 +13,7 @@ const ProtectedRoute = ({ children }) => {
 
     if (loading) {
         return (
-            <div className="flex min-h-screen items-center justify-center">
+            <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
                     <p className="mt-4 text-muted-foreground">Loading...</p>
@@ -33,24 +35,31 @@ const AppContent = () => {
 
     return (
         <Router>
-            <Routes>
-                <Route
-                    path="/login"
-                    element={user ? <Navigate to="/dashboard" replace /> : <Login />}
-                />
-                <Route
-                    path="/dashboard"
-                    element={
-                        <ProtectedRoute>
-                            <Dashboard />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/"
-                    element={<Navigate to={user ? "/dashboard" : "/login"} replace />}
-                />
-            </Routes>
+            <ErrorBoundary>
+                <Routes>
+                    <Route
+                        path="/login"
+                        element={user ? <Navigate to="/dashboard" replace /> : <Login />}
+                    />
+                    <Route
+                        path="/dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/"
+                        element={<Navigate to={user ? "/dashboard" : "/login"} replace />}
+                    />
+                    {/* Catch all route for 404 */}
+                    <Route
+                        path="*"
+                        element={<Navigate to={user ? "/dashboard" : "/login"} replace />}
+                    />
+                </Routes>
+            </ErrorBoundary>
         </Router>
     );
 };
@@ -58,9 +67,13 @@ const AppContent = () => {
 // Root App Component
 const App = () => {
     return (
-        <AuthProvider>
-            <AppContent />
-        </AuthProvider>
+        <ErrorBoundary>
+            <ToastProvider>
+                <AuthProvider>
+                    <AppContent />
+                </AuthProvider>
+            </ToastProvider>
+        </ErrorBoundary>
     );
 };
 

@@ -9,18 +9,21 @@ import {
     LogOut,
     Menu,
     X,
-    Home
+    Home,
+    UserCheck,
+    MessageCircle,
+    Activity
 } from 'lucide-react';
 
-const Sidebar = ({ isOpen, onToggle }) => {
+const Sidebar = ({ isOpen, onToggle, activeTab, onTabChange }) => {
     const { user, logout } = useAuth();
-    const [activeTab, setActiveTab] = useState('dashboard');
 
     const navigation = [
-        { id: 'dashboard', label: 'Dashboard', icon: Home, href: '/dashboard' },
-        { id: 'users', label: 'Active Users', icon: Users, href: '/dashboard/users' },
-        { id: 'messages', label: 'Messages', icon: MessageSquare, href: '/dashboard/messages' },
+        { id: 'overview', label: 'Dashboard', icon: Home, href: '/dashboard' },
+        { id: 'users', label: 'User Management', icon: UserCheck, href: '/dashboard/users' },
+        { id: 'messages', label: 'Message Management', icon: MessageCircle, href: '/dashboard/messages' },
         { id: 'analytics', label: 'Analytics', icon: BarChart3, href: '/dashboard/analytics' },
+        { id: 'activity', label: 'Activity Log', icon: Activity, href: '/dashboard/activity' },
         { id: 'settings', label: 'Settings', icon: Settings, href: '/dashboard/settings' },
     ];
 
@@ -72,7 +75,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
                                     variant={activeTab === item.id ? 'secondary' : 'ghost'}
                                     className={`w-full justify-start ${activeTab === item.id ? 'bg-secondary text-secondary-foreground' : 'hover:bg-gray-100'
                                         }`}
-                                    onClick={() => setActiveTab(item.id)}
+                                    onClick={() => onTabChange(item.id)}
                                 >
                                     <Icon className="w-5 h-5 mr-3" />
                                     {item.label}
@@ -84,17 +87,20 @@ const Sidebar = ({ isOpen, onToggle }) => {
                     {/* User section */}
                     <div className="p-4 border-t border-gray-200">
                         <div className="flex items-center space-x-3 mb-4">
-                            <img
-                                src={user?.avatar || 'https://github.com/shadcn.png'}
-                                alt={user?.name}
-                                className="w-10 h-10 rounded-full"
-                            />
+                            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                                <span className="text-sm font-bold text-primary-foreground">
+                                    {user?.firstName ? user.firstName[0] : user?.username?.[0] || 'U'}
+                                </span>
+                            </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-gray-900 truncate">
-                                    {user?.name}
+                                    {user?.firstName && user?.lastName 
+                                        ? `${user.firstName} ${user.lastName}`
+                                        : user?.username || 'Admin User'
+                                    }
                                 </p>
                                 <p className="text-xs text-gray-500 truncate">
-                                    {user?.email}
+                                    {user?.email || 'admin@beacon.com'}
                                 </p>
                             </div>
                         </div>

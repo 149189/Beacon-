@@ -3,14 +3,14 @@ Django==4.2.7
 djangorestframework==3.14.0
 
 # Database Drivers
-mysqlclient==2.2.0
+mysqlclient==2.2.0; platform_system != "Windows"
 PyMySQL==1.1.0
 
 # Environment Variables
 python-dotenv==1.0.0
 
 # Image Processing (for user avatars/media)
-Pillow==10.1.0
+Pillow>=11.0.0,<12
 
 # Security & Authentication
 django-cors-headers==4.3.1

@@ -20,9 +20,11 @@ from dotenv import load_dotenv
 from datetime import timedelta
 
 # Load environment variables
-load_dotenv()
+load_dotenv()  # .env if present
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+# Also load config.env in this project directory if present
+load_dotenv(dotenv_path=BASE_DIR / 'config.env', override=False)
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key-here-change-this-in-production')
 
@@ -75,27 +77,46 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'beacon_server.wsgi.application'
 
-# Database Configuration - MySQL
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('MYSQL_DB', 'beacon_db'),
-        'USER': os.getenv('MYSQL_USER', 'root'),
-        'PASSWORD': os.getenv('MYSQL_PASSWORD', ''),
-        'HOST': os.getenv('MYSQL_HOST', 'localhost'),
-        'PORT': os.getenv('MYSQL_PORT', '3306'),
-        'OPTIONS': {
-            'sql_mode': 'STRICT_TRANS_TABLES',
-            'charset': 'utf8mb4',
-            'init_command': "SET NAMES 'utf8mb4'",
-            'autocommit': True,
-        },
-        'TEST': {
-            'CHARSET': 'utf8mb4',
-            'COLLATION': 'utf8mb4_unicode_ci',
+# Database Configuration - Prefer SQLite on Windows unless explicitly forcing MySQL and mysqlclient is available
+USE_SQLITE = os.getenv('USE_SQLITE', '').lower() in ('1', 'true', 'yes')
+FORCE_MYSQL = os.getenv('FORCE_MYSQL', '').lower() in ('1', 'true', 'yes')
+MYSQL_HOST = os.getenv('MYSQL_HOST')
+
+# Detect mysqlclient availability
+try:
+    import MySQLdb  # type: ignore
+    MYSQLCLIENT_AVAILABLE = True
+except Exception:
+    MYSQLCLIENT_AVAILABLE = False
+
+if USE_SQLITE or (not FORCE_MYSQL and (not MYSQL_HOST or not MYSQLCLIENT_AVAILABLE)):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.getenv('MYSQL_DB', 'beacon_db'),
+            'USER': os.getenv('MYSQL_USER', 'root'),
+            'PASSWORD': os.getenv('MYSQL_PASSWORD', ''),
+            'HOST': MYSQL_HOST,
+            'PORT': os.getenv('MYSQL_PORT', '3306'),
+            'OPTIONS': {
+                'sql_mode': 'STRICT_TRANS_TABLES',
+                'charset': 'utf8mb4',
+                'init_command': "SET NAMES 'utf8mb4'",
+                'autocommit': True,
+            },
+            'TEST': {
+                'CHARSET': 'utf8mb4',
+                'COLLATION': 'utf8mb4_unicode_ci',
+            }
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

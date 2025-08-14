@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../components/Toast';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -14,19 +15,33 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
 
   const { login, error } = useAuth();
+  const { error: showError, success } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
-    const result = await login(username, password);
-
-    if (result.success) {
-      navigate('/dashboard');
+    
+    if (!username.trim() || !password.trim()) {
+      showError('Validation Error', 'Please enter both username and password');
+      return;
     }
 
-    setLoading(false);
+    setLoading(true);
+
+    try {
+      const result = await login(username, password);
+
+      if (result.success) {
+        success('Login Successful', 'Welcome back!');
+        navigate('/dashboard');
+      } else {
+        showError('Login Failed', result.error || 'Invalid credentials');
+      }
+    } catch (err) {
+      showError('Login Error', 'An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -65,6 +80,7 @@ const Login = () => {
                     onChange={(e) => setUsername(e.target.value)}
                     className="pl-10"
                     required
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -83,11 +99,13 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10 pr-10"
                     required
+                    disabled={loading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground disabled:opacity-50"
+                    disabled={loading}
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>

@@ -4,6 +4,12 @@
 
 ---
 
+## 📸 Operator Console — Dashboard Previews
+
+| **Admin Client** |
+|-----------------------|
+| ![Admin Side Dashboad](web_images/dashboard_image.png) | 
+
 ## 🚨 The Problem
 In moments of danger, every second counts — yet:
 - Calling for help can be delayed if a phone is locked or network is weak.

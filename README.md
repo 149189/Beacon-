@@ -109,4 +109,3 @@ Licensed under the [MIT License](LICENSE).
 > *Beacon — Your signal for safety, anytime, anywhere.*
 
 
-## 📦 Repository Structure

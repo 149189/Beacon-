@@ -9,7 +9,7 @@ import {
     Activity,
     User,
     MessageSquare,
-    Login,
+    LogIn,
     LogOut,
     AlertCircle,
     Loader2,
@@ -97,7 +97,7 @@ const ActivityLog = () => {
     const getActivityIcon = (activityType) => {
         switch (activityType) {
             case 'login':
-                return <Login className="h-4 w-4 text-green-500" />;
+                return <LogIn className="h-4 w-4 text-green-500" />;
             case 'logout':
                 return <LogOut className="h-4 w-4 text-red-500" />;
             case 'message_sent':

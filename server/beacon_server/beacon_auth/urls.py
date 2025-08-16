@@ -25,4 +25,25 @@ urlpatterns = [
     
     # Dashboard
     path('dashboard/stats/', views.DashboardStatsView.as_view(), name='dashboard-stats'),
+    
+    # ======================== PANIC ALERT ENDPOINTS ========================
+    
+    # Panic alerts management
+    path('alerts/', views.PanicAlertListView.as_view(), name='alert-list'),
+    path('alerts/<uuid:pk>/', views.PanicAlertDetailView.as_view(), name='alert-detail'),
+    path('alerts/stats/', views.PanicAlertStatsView.as_view(), name='alert-stats'),
+    
+    # Alert actions
+    path('alerts/<uuid:alert_id>/acknowledge/', views.acknowledge_alert, name='acknowledge-alert'),
+    path('alerts/<uuid:alert_id>/resolve/', views.resolve_alert, name='resolve-alert'),
+    path('alerts/<uuid:alert_id>/cancel/', views.cancel_alert, name='cancel-alert'),
+    path('alerts/<uuid:alert_id>/location/', views.update_alert_location, name='update-alert-location'),
+    
+    # Alert sub-resources
+    path('alerts/<uuid:alert_id>/locations/', views.AlertLocationListView.as_view(), name='alert-location-list'),
+    path('alerts/<uuid:alert_id>/media/', views.AlertMediaListView.as_view(), name='alert-media-list'),
+    
+    # Emergency contacts
+    path('emergency-contacts/', views.EmergencyContactListView.as_view(), name='emergency-contact-list'),
+    path('emergency-contacts/<int:pk>/', views.EmergencyContactDetailView.as_view(), name='emergency-contact-detail'),
 ]

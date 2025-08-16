@@ -34,6 +34,7 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0').split(
 
 # Application definition
 INSTALLED_APPS = [
+    'daphne',  # Add Daphne at the top for ASGI
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'channels',  # Add Django Channels
     'beacon_auth',  # Your custom auth app
 ]
 
@@ -76,6 +78,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'beacon_server.wsgi.application'
+
+# ASGI Configuration for WebSockets
+ASGI_APPLICATION = 'beacon_server.asgi.application'
 
 # Database Configuration - Prefer SQLite on Windows unless explicitly forcing MySQL and mysqlclient is available
 USE_SQLITE = os.getenv('USE_SQLITE', '').lower() in ('1', 'true', 'yes')
@@ -269,3 +274,45 @@ LOGGING = {
         },
     },
 }
+
+# ======================== CHANNELS CONFIGURATION ========================
+
+# Channel Layer Configuration for WebSockets
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [os.getenv('REDIS_URL', 'redis://127.0.0.1:6379/1')],
+        },
+    },
+}
+
+# Fallback to in-memory channel layer for development if Redis is not available
+if DEBUG and not os.getenv('REDIS_URL'):
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer'
+        }
+    }
+
+# WebSocket Settings
+WEBSOCKET_URL = '/ws/'
+WEBSOCKET_ACCEPT_ALL = DEBUG  # Allow all connections in debug mode
+
+# WebSocket Origins (for CORS)
+WEBSOCKET_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://127.0.0.1:3000', 
+    'http://127.0.0.1:5173',
+    'ws://localhost:8000',
+    'ws://127.0.0.1:8000',
+]
+
+if DEBUG:
+    WEBSOCKET_ALLOWED_ORIGINS.extend([
+        'ws://localhost:*',
+        'ws://127.0.0.1:*',
+        'http://localhost:*',
+        'http://127.0.0.1:*',
+    ])

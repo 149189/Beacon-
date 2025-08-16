@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import '../models/panic_alert.dart';
 import '../utils/constants.dart';
+import '../models/panic_alert.dart';
 import 'auth_service.dart';
 import 'location_service.dart';
+import 'websocket_service.dart';
 import 'api_service.dart';
 
 class PanicService {
@@ -43,6 +45,12 @@ class PanicService {
       // Ensure other services are initialized
       await AuthService.instance.initialize();
       await LocationService.instance.initialize();
+      
+      // Initialize WebSocket service if user is logged in
+      if (AuthService.instance.isLoggedIn) {
+        await WebSocketService.instance.initialize();
+        _listenToWebSocketUpdates();
+      }
       
       // Load any active alerts from storage
       await _loadActiveAlert();
@@ -253,7 +261,7 @@ class PanicService {
     
     _locationUpdateTimer = Timer.periodic(
       Duration(seconds: AppConstants.locationUpdateInterval),
-      (_) => updateLocation(),
+      (_) => _updateLocationWithWebSocket(),
     );
     
     debugPrint('PanicService: Location tracking started');
@@ -339,6 +347,168 @@ class PanicService {
       await HapticFeedback.vibrate();
     } catch (e) {
       debugPrint('PanicService: Error triggering haptic feedback: $e');
+    }
+  }
+
+  /// Listen to WebSocket updates for real-time communication
+  void _listenToWebSocketUpdates() {
+    // Listen to alert status updates
+    WebSocketService.instance.alertUpdates.listen((message) {
+      _handleAlertUpdate(message);
+    });
+    
+    // Listen to operator messages
+    WebSocketService.instance.operatorMessages.listen((message) {
+      _handleOperatorMessage(message);
+    });
+    
+    debugPrint('PanicService: WebSocket listeners set up');
+  }
+  
+  /// Handle alert status updates from WebSocket
+  void _handleAlertUpdate(Map<String, dynamic> message) {
+    try {
+      final alertId = message['alert_id'];
+      final status = message['status'];
+      
+      if (_activeAlert?.id == alertId) {
+        // Update local alert status
+        _activeAlert = _activeAlert!.copyWith(
+          status: status,
+          acknowledgedAt: status == AppConstants.acknowledgedStatus
+              ? DateTime.now()
+              : _activeAlert!.acknowledgedAt,
+          resolvedAt: (status == AppConstants.resolvedStatus || 
+                      status == AppConstants.canceledStatus)
+              ? DateTime.now()
+              : _activeAlert!.resolvedAt,
+        );
+        
+        // Notify listeners
+        _alertStreamController.add(_activeAlert!);
+        _statusStreamController.add('Alert status updated: $status');
+        
+        // Stop tracking if alert is resolved/canceled
+        if (status == AppConstants.resolvedStatus || 
+            status == AppConstants.canceledStatus) {
+          _stopLocationTracking();
+          _clearActiveAlert();
+        }
+        
+        debugPrint('PanicService: Alert status updated to $status');
+      }
+    } catch (e) {
+      debugPrint('PanicService: Error handling alert update: $e');
+    }
+  }
+  
+  /// Handle operator messages from WebSocket
+  void _handleOperatorMessage(Map<String, dynamic> message) {
+    try {
+      final messageText = message['message'];
+      final operatorName = message['operator_name'] ?? 'Operator';
+      
+      _statusStreamController.add('$operatorName: $messageText');
+      debugPrint('PanicService: Operator message received: $messageText');
+      
+    } catch (e) {
+      debugPrint('PanicService: Error handling operator message: $e');
+    }
+  }
+  
+  /// Update location with WebSocket support
+  Future<void> _updateLocationWithWebSocket() async {
+    if (!hasActiveAlert) return;
+    
+    try {
+      final location = await LocationService.instance.getCurrentLocation();
+      if (location == null) return;
+      
+      // Send location update via WebSocket for real-time tracking
+      final locationData = {
+        'latitude': location.latitude,
+        'longitude': location.longitude,
+        'accuracy': location.accuracy,
+        'provider': 'gps',
+        'battery_level': await _getBatteryLevel(),
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+      
+      // Send via WebSocket if connected
+      if (WebSocketService.instance.isConnected) {
+        await WebSocketService.instance.sendLocationUpdate(
+          _activeAlert!.id,
+          locationData,
+        );
+      }
+      
+      // Also send via HTTP API as backup
+      await updateLocation();
+      
+    } catch (e) {
+      debugPrint('PanicService: Error in WebSocket location update: $e');
+      // Fallback to regular update
+      await updateLocation();
+    }
+  }
+  
+  /// Send chat message to operator
+  Future<void> sendChatMessage(String message) async {
+    if (!hasActiveAlert) return;
+    
+    try {
+      await WebSocketService.instance.sendChatMessage(
+        _activeAlert!.id,
+        message,
+      );
+      
+      debugPrint('PanicService: Chat message sent: $message');
+      
+    } catch (e) {
+      debugPrint('PanicService: Error sending chat message: $e');
+      rethrow;
+    }
+  }
+  
+  /// Cancel alert via WebSocket
+  Future<void> cancelAlertViaWebSocket() async {
+    if (!hasActiveAlert) return;
+    
+    try {
+      await WebSocketService.instance.cancelAlert(_activeAlert!.id);
+      debugPrint('PanicService: Cancel request sent via WebSocket');
+      
+    } catch (e) {
+      debugPrint('PanicService: Error canceling via WebSocket: $e');
+      // Fallback to HTTP API
+      await cancelAlert();
+    }
+  }
+  
+  /// Get WebSocket connection state stream
+  Stream<WebSocketConnectionState> get connectionStateStream =>
+      WebSocketService.instance.connectionStateStream;
+  
+  /// Check if WebSocket is connected
+  bool get isWebSocketConnected => WebSocketService.instance.isConnected;
+  
+  /// Connect to alert-specific WebSocket channel
+  Future<void> connectToAlertChannel(String alertId) async {
+    try {
+      await WebSocketService.instance.connectToAlert(alertId);
+      debugPrint('PanicService: Connected to alert channel: $alertId');
+    } catch (e) {
+      debugPrint('PanicService: Error connecting to alert channel: $e');
+    }
+  }
+  
+  /// Disconnect from all WebSocket channels
+  Future<void> disconnectWebSocket() async {
+    try {
+      await WebSocketService.instance.disconnect();
+      debugPrint('PanicService: WebSocket disconnected');
+    } catch (e) {
+      debugPrint('PanicService: Error disconnecting WebSocket: $e');
     }
   }
 

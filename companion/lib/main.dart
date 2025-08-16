@@ -8,6 +8,7 @@ import 'screens/panic_screen.dart';
 import 'screens/emergency_contacts_screen.dart';
 import 'screens/alert_history_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/websocket_test_screen.dart';
 import 'services/auth_service.dart';
 import 'services/location_service.dart';
 import 'services/panic_service.dart';
@@ -38,6 +39,7 @@ class BeaconApp extends StatelessWidget {
         '/emergency-contacts': (context) => const EmergencyContactsScreen(),
         '/alert-history': (context) => const AlertHistoryScreen(),
         '/settings': (context) => const SettingsScreen(),
+        '/websocket-test': (context) => const WebSocketTestScreen(),
       },
       builder: (context, child) {
         return MediaQuery(

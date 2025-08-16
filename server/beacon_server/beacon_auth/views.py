@@ -366,8 +366,10 @@ class PanicAlertListView(generics.ListCreateAPIView):
             user_agent=self.request.META.get('HTTP_USER_AGENT', '')
         )
         
-        # TODO: Trigger real-time notifications to admin panel
-        # This will be implemented when we add WebSocket support
+        # Broadcast new alert to admin dashboard via WebSocket
+        from .consumers import broadcast_new_panic_alert
+        alert_data = PanicAlertListSerializer(alert).data
+        broadcast_new_panic_alert(alert_data)
         
         return Response({
             'success': True,

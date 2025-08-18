@@ -89,7 +89,7 @@ class WebSocketService {
       final token = await AuthService.instance.getAccessToken();
       if (token == null) throw Exception('No access token');
 
-      final uri = Uri.parse('${AppConstants.wsBaseUrl}/ws/user/${user['id']}/')
+      final uri = Uri.parse('${AppConstants.wsBaseUrl}/ws/user/${user.id}/')
           .replace(queryParameters: {'token': token});
 
       _userChannel = WebSocketChannel.connect(uri);

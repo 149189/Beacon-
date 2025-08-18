@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class AppConstants {
   // App Information
   static const String appName = 'Beacon';
@@ -46,6 +48,7 @@ class AppConstants {
   static const String shakeToAlertKey = 'shake_to_alert_enabled';
   static const String doNotDisturbKey = 'do_not_disturb_mode';
   static const String silentModeKey = 'silent_mode_enabled';
+  static const String biometricEnabledKey = 'biometric_enabled';
   
   // Alert Types
   static const String panicButtonAlert = 'panic_button';
@@ -90,6 +93,7 @@ class AppConstants {
   static const int retryDelay = 2; // seconds
   
   // UI Constants
+  static const primaryColor = Color(0xFF2196F3); // Blue color
   static const double defaultPadding = 16.0;
   static const double smallPadding = 8.0;
   static const double largePadding = 24.0;
@@ -135,8 +139,8 @@ class AppConstants {
   static const int maxPasswordLength = 128;
   static const int minUsernameLength = 3;
   static const int maxUsernameLength = 50;
-  static const RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-  static const RegExp phoneRegex = RegExp(r'^\+?[1-9]\d{1,14}$');
+  static final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+  static final RegExp phoneRegex = RegExp(r'^\+?[1-9]\d{1,14}$');
   
   // Error Messages
   static const String networkErrorMessage = 'Network connection error. Please check your internet connection.';

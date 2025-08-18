@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 
 class DebugFloatingActionButton extends StatelessWidget {
-  const DebugFloatingActionButton({Key? key}) : super(key: key);
+  const DebugFloatingActionButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,8 +11,8 @@ class DebugFloatingActionButton extends StatelessWidget {
       return FloatingActionButton(
         onPressed: () => _showDebugMenu(context),
         backgroundColor: Colors.orange,
-        child: const Icon(Icons.bug_report),
         tooltip: 'Debug Menu',
+        child: const Icon(Icons.bug_report),
       );
     }
     return const SizedBox.shrink();
@@ -27,7 +27,7 @@ class DebugFloatingActionButton extends StatelessWidget {
 }
 
 class DebugMenu extends StatelessWidget {
-  const DebugMenu({Key? key}) : super(key: key);
+  const DebugMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class DebugMenu extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
-          
+
           // WebSocket Test Screen
           ElevatedButton.icon(
             onPressed: () {
@@ -57,9 +57,9 @@ class DebugMenu extends StatelessWidget {
               foregroundColor: Colors.white,
             ),
           ),
-          
+
           const SizedBox(height: 10),
-          
+
           // Quick Login (for testing)
           ElevatedButton.icon(
             onPressed: () async {
@@ -73,9 +73,9 @@ class DebugMenu extends StatelessWidget {
               foregroundColor: Colors.white,
             ),
           ),
-          
+
           const SizedBox(height: 10),
-          
+
           // Check Auth Status
           ElevatedButton.icon(
             onPressed: () {
@@ -89,9 +89,9 @@ class DebugMenu extends StatelessWidget {
               foregroundColor: Colors.white,
             ),
           ),
-          
+
           const SizedBox(height: 10),
-          
+
           // Close Debug Menu
           ElevatedButton.icon(
             onPressed: () => Navigator.of(context).pop(),
@@ -102,7 +102,7 @@ class DebugMenu extends StatelessWidget {
               foregroundColor: Colors.white,
             ),
           ),
-          
+
           const SizedBox(height: 20),
         ],
       ),
@@ -113,7 +113,7 @@ class DebugMenu extends StatelessWidget {
     try {
       // For testing purposes - this would normally be done through proper UI
       final scaffoldMessenger = ScaffoldMessenger.of(context);
-      
+
       // This is a mock quick login for testing
       // In a real scenario, you'd have proper credentials
       scaffoldMessenger.showSnackBar(
@@ -122,7 +122,7 @@ class DebugMenu extends StatelessWidget {
           backgroundColor: Colors.blue,
         ),
       );
-      
+
       // Check if already logged in
       if (AuthService.instance.isLoggedIn) {
         scaffoldMessenger.showSnackBar(
@@ -139,7 +139,6 @@ class DebugMenu extends StatelessWidget {
           ),
         );
       }
-      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -153,7 +152,7 @@ class DebugMenu extends StatelessWidget {
   void _showAuthStatus(BuildContext context) {
     final isLoggedIn = AuthService.instance.isLoggedIn;
     final user = AuthService.instance.currentUser;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -166,7 +165,8 @@ class DebugMenu extends StatelessWidget {
             const SizedBox(height: 8),
             Text('User: ${user?.toString() ?? "None"}'),
             const SizedBox(height: 8),
-            Text('Has Token: ${AuthService.instance.hasValidToken ? "Yes" : "No"}'),
+            Text(
+                'Has Token: ${AuthService.instance.hasValidToken ? "Yes" : "No"}'),
           ],
         ),
         actions: [

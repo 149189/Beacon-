@@ -5,7 +5,7 @@ import '../services/auth_service.dart';
 import '../utils/constants.dart';
 
 class WebSocketTestScreen extends StatefulWidget {
-  const WebSocketTestScreen({Key? key}) : super(key: key);
+  const WebSocketTestScreen({super.key});
 
   @override
   State<WebSocketTestScreen> createState() => _WebSocketTestScreenState();
@@ -14,7 +14,8 @@ class WebSocketTestScreen extends StatefulWidget {
 class _WebSocketTestScreenState extends State<WebSocketTestScreen> {
   final TextEditingController _messageController = TextEditingController();
   final List<String> _messages = [];
-  WebSocketConnectionState _connectionState = WebSocketConnectionState.disconnected;
+  WebSocketConnectionState _connectionState =
+      WebSocketConnectionState.disconnected;
   bool _isInitialized = false;
 
   @override
@@ -27,7 +28,7 @@ class _WebSocketTestScreenState extends State<WebSocketTestScreen> {
     try {
       // Initialize services
       await PanicService.instance.initialize();
-      
+
       // Listen to connection state changes
       WebSocketService.instance.connectionStateStream.listen((state) {
         setState(() {
@@ -61,7 +62,6 @@ class _WebSocketTestScreenState extends State<WebSocketTestScreen> {
       });
 
       _addMessage('WebSocket test initialized');
-
     } catch (e) {
       _addMessage('Initialization error: $e');
     }
@@ -85,7 +85,7 @@ class _WebSocketTestScreenState extends State<WebSocketTestScreen> {
         _addMessage('Error: User not logged in');
         return;
       }
-      
+
       await WebSocketService.instance.initialize();
       _addMessage('WebSocket connection initiated');
     } catch (e) {
@@ -105,15 +105,16 @@ class _WebSocketTestScreenState extends State<WebSocketTestScreen> {
   Future<void> _sendTestMessage() async {
     try {
       if (_messageController.text.trim().isEmpty) return;
-      
+
       // Test sending a chat message (requires active alert)
       if (PanicService.instance.hasActiveAlert) {
-        await PanicService.instance.sendChatMessage(_messageController.text.trim());
+        await PanicService.instance
+            .sendChatMessage(_messageController.text.trim());
         _addMessage('Sent: ${_messageController.text.trim()}');
       } else {
         _addMessage('No active alert to send chat message');
       }
-      
+
       _messageController.clear();
     } catch (e) {
       _addMessage('Send error: $e');
@@ -126,7 +127,7 @@ class _WebSocketTestScreenState extends State<WebSocketTestScreen> {
         description: 'Test alert from WebSocket screen',
         priority: AppConstants.mediumPriority,
       );
-      
+
       if (alert != null) {
         _addMessage('Test alert created: ${alert.id}');
         // Connect to the alert-specific channel
@@ -206,7 +207,7 @@ class _WebSocketTestScreenState extends State<WebSocketTestScreen> {
               textAlign: TextAlign.center,
             ),
           ),
-          
+
           // Control Buttons
           Padding(
             padding: const EdgeInsets.all(16),
@@ -227,15 +228,16 @@ class _WebSocketTestScreenState extends State<WebSocketTestScreen> {
                   child: const Text('Create Alert'),
                 ),
                 ElevatedButton(
-                  onPressed: _isInitialized && PanicService.instance.hasActiveAlert 
-                      ? _cancelAlert 
-                      : null,
+                  onPressed:
+                      _isInitialized && PanicService.instance.hasActiveAlert
+                          ? _cancelAlert
+                          : null,
                   child: const Text('Cancel Alert'),
                 ),
               ],
             ),
           ),
-          
+
           // Message Input
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -259,9 +261,9 @@ class _WebSocketTestScreenState extends State<WebSocketTestScreen> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Messages List
           Expanded(
             child: Container(
@@ -299,7 +301,7 @@ class _WebSocketTestScreenState extends State<WebSocketTestScreen> {
                     ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
         ],
       ),

@@ -43,7 +43,8 @@ class BeaconApp extends StatelessWidget {
       },
       builder: (context, child) {
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: TextScaler.linear(1.0)),
           child: child!,
         );
       },
@@ -59,7 +60,8 @@ class AmraThemeApp extends StatefulWidget {
   State<AmraThemeApp> createState() => _AmraThemeAppState();
 }
 
-class _AmraThemeAppState extends State<AmraThemeApp> with WidgetsBindingObserver {
+class _AmraThemeAppState extends State<AmraThemeApp>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -76,7 +78,7 @@ class _AmraThemeAppState extends State<AmraThemeApp> with WidgetsBindingObserver
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    
+
     switch (state) {
       case AppLifecycleState.resumed:
         // App is resumed, start location tracking if needed
@@ -101,12 +103,11 @@ class _AmraThemeAppState extends State<AmraThemeApp> with WidgetsBindingObserver
     try {
       // Request necessary permissions
       await _requestPermissions();
-      
+
       // Initialize services
       await AuthService.instance.initialize();
       await LocationService.instance.initialize();
       await PanicService.instance.initialize();
-      
     } catch (e) {
       debugPrint('Error initializing app: $e');
     }

@@ -7,9 +7,9 @@ class AppConstants {
   static const String appDescription = 'Your Signal for Safety';
   
   // API Configuration
-  static const String baseUrl = 'http://localhost:8000'; // Change for production
+  static const String baseUrl = 'http://127.0.0.1:8000'; // Django backend URL
   static const String apiBasePath = '/api/auth';
-  static const String wsBaseUrl = 'ws://localhost:8000'; // WebSocket URL
+  static const String wsBaseUrl = 'ws://127.0.0.1:8000'; // WebSocket URL
   
   // API Endpoints
   static const String loginEndpoint = '$apiBasePath/login/';
@@ -21,10 +21,11 @@ class AppConstants {
   static const String dashboardStatsEndpoint = '$apiBasePath/dashboard/stats/';
   
   // Panic Alert Endpoints
-  static const String createAlertEndpoint = '$apiBasePath/alerts/';
-  static const String alertLocationEndpoint = '$apiBasePath/alerts/{id}/location/';
-  static const String alertMediaEndpoint = '$apiBasePath/alerts/{id}/media/';
-  static const String cancelAlertEndpoint = '$apiBasePath/alerts/{id}/cancel/';
+  static const String createPanicAlertEndpoint = '$apiBasePath/panic/create/';
+  static const String updateAlertLocationEndpoint = '$apiBasePath/alerts/{alertId}/location/';
+  static const String alertDetailEndpoint = '$apiBasePath/alerts/{alertId}/';
+  static const String alertMediaEndpoint = '$apiBasePath/alerts/{alertId}/media/';
+  static const String cancelAlertEndpoint = '$apiBasePath/alerts/{alertId}/cancel/';
   
   // WebSocket Endpoints
   static const String alertsWebSocketEndpoint = '/ws/alerts/';
@@ -158,6 +159,9 @@ class AppConstants {
   static const String contactAddedMessage = 'Emergency contact added successfully.';
   static const String contactUpdatedMessage = 'Emergency contact updated successfully.';
   static const String contactDeletedMessage = 'Emergency contact deleted successfully.';
+  
+  // Panic Button Settings
+  static const int panicCountdownSeconds = 5; // seconds to hold button
   
   // Shake Detection Settings
   static const double shakeThreshold = 2.7; // g-force threshold

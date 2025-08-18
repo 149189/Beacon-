@@ -27,7 +27,8 @@ class WebSocketService {
   WebSocketChannel? _chatChannel;
 
   // Connection state
-  WebSocketConnectionState _connectionState = WebSocketConnectionState.disconnected;
+  WebSocketConnectionState _connectionState =
+      WebSocketConnectionState.disconnected;
   Timer? _reconnectTimer;
   Timer? _heartbeatTimer;
   int _reconnectAttempts = 0;
@@ -36,27 +37,33 @@ class WebSocketService {
   static const int _heartbeatIntervalSeconds = 30;
 
   // Stream controllers for different message types
-  final StreamController<Map<String, dynamic>> _alertUpdateController = 
+  final StreamController<Map<String, dynamic>> _alertUpdateController =
       StreamController<Map<String, dynamic>>.broadcast();
-  final StreamController<Map<String, dynamic>> _operatorMessageController = 
+  final StreamController<Map<String, dynamic>> _operatorMessageController =
       StreamController<Map<String, dynamic>>.broadcast();
-  final StreamController<Map<String, dynamic>> _locationUpdateController = 
+  final StreamController<Map<String, dynamic>> _locationUpdateController =
       StreamController<Map<String, dynamic>>.broadcast();
-  final StreamController<Map<String, dynamic>> _chatMessageController = 
+  final StreamController<Map<String, dynamic>> _chatMessageController =
       StreamController<Map<String, dynamic>>.broadcast();
-  final StreamController<WebSocketConnectionState> _connectionStateController = 
+  final StreamController<WebSocketConnectionState> _connectionStateController =
       StreamController<WebSocketConnectionState>.broadcast();
 
   // Getters
   WebSocketConnectionState get connectionState => _connectionState;
-  bool get isConnected => _connectionState == WebSocketConnectionState.connected;
-  
+  bool get isConnected =>
+      _connectionState == WebSocketConnectionState.connected;
+
   // Stream getters
-  Stream<Map<String, dynamic>> get alertUpdates => _alertUpdateController.stream;
-  Stream<Map<String, dynamic>> get operatorMessages => _operatorMessageController.stream;
-  Stream<Map<String, dynamic>> get locationUpdates => _locationUpdateController.stream;
-  Stream<Map<String, dynamic>> get chatMessages => _chatMessageController.stream;
-  Stream<WebSocketConnectionState> get connectionStateStream => _connectionStateController.stream;
+  Stream<Map<String, dynamic>> get alertUpdates =>
+      _alertUpdateController.stream;
+  Stream<Map<String, dynamic>> get operatorMessages =>
+      _operatorMessageController.stream;
+  Stream<Map<String, dynamic>> get locationUpdates =>
+      _locationUpdateController.stream;
+  Stream<Map<String, dynamic>> get chatMessages =>
+      _chatMessageController.stream;
+  Stream<WebSocketConnectionState> get connectionStateStream =>
+      _connectionStateController.stream;
 
   /// Initialize WebSocket connections
   Future<void> initialize() async {
@@ -69,7 +76,6 @@ class WebSocketService {
       debugPrint('WebSocketService: Initializing...');
       await _connectUserChannel();
       _startHeartbeat();
-      
     } catch (e) {
       debugPrint('WebSocketService: Initialization failed: $e');
       _setConnectionState(WebSocketConnectionState.error);
@@ -82,18 +88,18 @@ class WebSocketService {
 
     try {
       _setConnectionState(WebSocketConnectionState.connecting);
-      
+
       final user = AuthService.instance.currentUser;
       if (user == null) throw Exception('No current user');
 
       final token = await AuthService.instance.getAccessToken();
       if (token == null) throw Exception('No access token');
 
-      final uri = Uri.parse('${AppConstants.wsBaseUrl}/ws/user/${user.id}/')
+      final uri = Uri.parse('${AppConstants.wsBaseUrl}/ws/user/${user['id']}/')
           .replace(queryParameters: {'token': token});
 
       _userChannel = WebSocketChannel.connect(uri);
-      
+
       await _userChannel!.ready;
       _setConnectionState(WebSocketConnectionState.connected);
       _reconnectAttempts = 0;
@@ -106,7 +112,6 @@ class WebSocketService {
       );
 
       debugPrint('WebSocketService: User channel connected');
-
     } catch (e) {
       debugPrint('WebSocketService: Failed to connect user channel: $e');
       _setConnectionState(WebSocketConnectionState.error);
@@ -136,7 +141,6 @@ class WebSocketService {
       );
 
       debugPrint('WebSocketService: Connected to alert $alertId');
-
     } catch (e) {
       debugPrint('WebSocketService: Failed to connect to alert: $e');
     }
@@ -163,8 +167,8 @@ class WebSocketService {
         onDone: () => debugPrint('Location WebSocket closed'),
       );
 
-      debugPrint('WebSocketService: Connected to location tracking for $alertId');
-
+      debugPrint(
+          'WebSocketService: Connected to location tracking for $alertId');
     } catch (e) {
       debugPrint('WebSocketService: Failed to connect to location: $e');
     }
@@ -192,14 +196,14 @@ class WebSocketService {
       );
 
       debugPrint('WebSocketService: Connected to chat for $alertId');
-
     } catch (e) {
       debugPrint('WebSocketService: Failed to connect to chat: $e');
     }
   }
 
   /// Send location update
-  Future<void> sendLocationUpdate(String alertId, Map<String, dynamic> location) async {
+  Future<void> sendLocationUpdate(
+      String alertId, Map<String, dynamic> location) async {
     if (_locationChannel == null) {
       await connectToLocation(alertId);
     }
@@ -213,7 +217,6 @@ class WebSocketService {
 
       _locationChannel?.sink.add(json.encode(message));
       debugPrint('WebSocketService: Location update sent');
-
     } catch (e) {
       debugPrint('WebSocketService: Failed to send location update: $e');
     }
@@ -234,7 +237,6 @@ class WebSocketService {
 
       _chatChannel?.sink.add(json.encode(payload));
       debugPrint('WebSocketService: Chat message sent');
-
     } catch (e) {
       debugPrint('WebSocketService: Failed to send chat message: $e');
     }
@@ -254,7 +256,6 @@ class WebSocketService {
 
       _alertsChannel?.sink.add(json.encode(message));
       debugPrint('WebSocketService: Alert cancellation sent');
-
     } catch (e) {
       debugPrint('WebSocketService: Failed to send alert cancellation: $e');
     }
@@ -392,7 +393,8 @@ class WebSocketService {
     _reconnectTimer = Timer(
       Duration(seconds: _reconnectDelaySeconds * _reconnectAttempts),
       () async {
-        debugPrint('WebSocketService: Attempting reconnection ($_reconnectAttempts/$_maxReconnectAttempts)');
+        debugPrint(
+            'WebSocketService: Attempting reconnection ($_reconnectAttempts/$_maxReconnectAttempts)');
         await _reconnectUserChannel();
       },
     );
@@ -413,7 +415,7 @@ class WebSocketService {
   void _startHeartbeat() {
     _heartbeatTimer?.cancel();
     _heartbeatTimer = Timer.periodic(
-      Duration(seconds: _heartbeatIntervalSeconds),
+      const Duration(seconds: _heartbeatIntervalSeconds),
       (_) => _sendHeartbeat(),
     );
   }
@@ -485,17 +487,17 @@ class WebSocketService {
   /// Disconnect all WebSocket connections
   Future<void> disconnect() async {
     debugPrint('WebSocketService: Disconnecting all channels...');
-    
+
     _reconnectTimer?.cancel();
     _heartbeatTimer?.cancel();
-    
+
     await Future.wait([
       _disconnectUserChannel(),
       _disconnectAlertChannel(),
       _disconnectLocationChannel(),
       _disconnectChatChannel(),
     ]);
-    
+
     _setConnectionState(WebSocketConnectionState.disconnected);
     _reconnectAttempts = 0;
   }
@@ -503,13 +505,13 @@ class WebSocketService {
   /// Dispose of the service
   void dispose() {
     disconnect();
-    
+
     _alertUpdateController.close();
     _operatorMessageController.close();
     _locationUpdateController.close();
     _chatMessageController.close();
     _connectionStateController.close();
-    
+
     debugPrint('WebSocketService: Disposed');
   }
 }

@@ -580,6 +580,115 @@ class PanicAlertStatsView(APIView):
         serializer = PanicAlertStatsSerializer(stats)
         return Response(serializer.data)
 
+# ======================== PANIC ALERT ENDPOINTS FOR API ========================
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_alerts_for_map(request):
+    """Get active alerts with location data for map display"""
+    if not request.user.is_staff:
+        return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
+    
+    try:
+        alerts = PanicAlert.objects.filter(
+            status__in=['active', 'acknowledged', 'responding'],
+            latitude__isnull=False,
+            longitude__isnull=False
+        ).select_related('user', 'assigned_operator')
+        
+        alerts_data = []
+        for alert in alerts:
+            alert_data = {
+                'id': str(alert.id),
+                'user': alert.user.username,
+                'status': alert.status,
+                'alert_type': alert.alert_type,
+                'priority': alert.priority,
+                'latitude': float(alert.latitude),
+                'longitude': float(alert.longitude),
+                'accuracy': alert.location_accuracy,
+                'address': alert.address,
+                'created_at': alert.created_at.isoformat(),
+                'updated_at': alert.updated_at.isoformat(),
+                'assigned_operator': alert.assigned_operator.username if alert.assigned_operator else None,
+                'duration_seconds': (timezone.now() - alert.created_at).total_seconds()
+            }
+            alerts_data.append(alert_data)
+        
+        return Response({
+            'success': True,
+            'alerts': alerts_data,
+            'count': len(alerts_data)
+        })
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def create_panic_alert(request):
+    """Create a new panic alert from mobile app"""
+    try:
+        # Get location data
+        latitude = request.data.get('latitude')
+        longitude = request.data.get('longitude')
+        
+        if not latitude or not longitude:
+            return Response({
+                'error': 'Location data (latitude and longitude) is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Create panic alert
+        alert = PanicAlert.objects.create(
+            user=request.user,
+            alert_type=request.data.get('alert_type', 'panic_button'),
+            priority=request.data.get('priority', 4),
+            latitude=latitude,
+            longitude=longitude,
+            location_accuracy=request.data.get('accuracy', 0),
+            address=request.data.get('address', ''),
+            description=request.data.get('description', ''),
+            is_silent=request.data.get('is_silent', False),
+            device_info=request.data.get('device_info', {}),
+            network_info=request.data.get('network_info', {})
+        )
+        
+        # Create initial location record
+        AlertLocation.objects.create(
+            alert=alert,
+            latitude=latitude,
+            longitude=longitude,
+            accuracy=request.data.get('accuracy', 0),
+            altitude=request.data.get('altitude'),
+            speed=request.data.get('speed'),
+            heading=request.data.get('heading'),
+            provider=request.data.get('provider', 'gps'),
+            battery_level=request.data.get('battery_level')
+        )
+        
+        # Log activity
+        UserActivity.objects.create(
+            user=request.user,
+            activity_type='panic_alert',
+            description=f'Panic alert created: {alert.get_alert_type_display()}',
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', '')
+        )
+        
+        # Broadcast new alert to admin dashboard via WebSocket
+        alert_data = PanicAlertListSerializer(alert).data
+        broadcast_new_panic_alert(alert_data)
+        broadcast_map_alert_update(alert_data)
+        
+        return Response({
+            'success': True,
+            'alert_id': str(alert.id),
+            'message': 'Panic alert created successfully',
+            'alert': alert_data
+        }, status=status.HTTP_201_CREATED)
+        
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 # ======================== PANIC ALERT ACTION ENDPOINTS ========================
 
 @api_view(['POST'])

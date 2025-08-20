@@ -5,6 +5,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import ToastProvider from './components/Toast';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import MapView from './pages/MapView';
 import './index.css';
 
 // Protected Route Component
@@ -46,6 +47,14 @@ const AppContent = () => {
                         element={
                             <ProtectedRoute>
                                 <Dashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/map"
+                        element={
+                            <ProtectedRoute>
+                                <MapView />
                             </ProtectedRoute>
                         }
                     />

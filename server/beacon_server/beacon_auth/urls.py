@@ -39,6 +39,10 @@ urlpatterns = [
     path('alerts/<uuid:alert_id>/cancel/', views.cancel_alert, name='cancel-alert'),
     path('alerts/<uuid:alert_id>/location/', views.update_alert_location, name='update-alert-location'),
     
+    # Map and mobile endpoints
+    path('alerts/map/', views.get_alerts_for_map, name='alerts-for-map'),
+    path('panic/create/', views.create_panic_alert, name='create-panic-alert'),
+    
     # Alert sub-resources
     path('alerts/<uuid:alert_id>/locations/', views.AlertLocationListView.as_view(), name='alert-location-list'),
     path('alerts/<uuid:alert_id>/media/', views.AlertMediaListView.as_view(), name='alert-media-list'),

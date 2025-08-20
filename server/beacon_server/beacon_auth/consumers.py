@@ -74,6 +74,9 @@ class PanicAlertConsumer(BaseWebSocketConsumer):
         
         # Send current active alerts
         await self.send_active_alerts()
+        
+        # Log connection
+        logger.info(f"Admin connected to panic alerts: {self.scope['user'].username}")
     
     async def disconnect(self, close_code):
         # Leave the panic alerts group
@@ -342,10 +345,35 @@ class LocationConsumer(BaseWebSocketConsumer):
         
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await super().connect()
+        
+        # Send last known location
+        await self.send_last_location()
     
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
         await super().disconnect(close_code)
+        
+    @database_sync_to_async
+    def get_last_location(self):
+        """Get last known location for this alert"""
+        try:
+            alert = PanicAlert.objects.get(id=self.alert_id)
+            location = AlertLocation.objects.filter(alert=alert).order_by('-timestamp').first()
+            if location:
+                return AlertLocationSerializer(location).data
+            return None
+        except ObjectDoesNotExist:
+            return None
+            
+    async def send_last_location(self):
+        """Send last known location to client"""
+        location_data = await self.get_last_location()
+        if location_data:
+            await self.send(text_data=json.dumps({
+                'type': 'last_location',
+                'location': location_data,
+                'timestamp': timezone.now().isoformat()
+            }))
     
     @database_sync_to_async
     def check_location_access(self):
@@ -540,6 +568,104 @@ class AdminDashboardConsumer(BaseWebSocketConsumer):
         }))
 
 
+class MapAlertsConsumer(BaseWebSocketConsumer):
+    """Consumer for real-time map alerts (Admin Dashboard Map)"""
+    
+    async def connect(self):
+        # Only allow staff users to connect
+        if not self.scope["user"].is_staff:
+            await self.close(code=4003)  # Forbidden
+            return
+        
+        # Join the map alerts group
+        self.group_name = 'map_alerts'
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
+        
+        await super().connect()
+        
+        # Send current map alerts
+        await self.send_map_alerts()
+        
+        # Log connection
+        logger.info(f"Admin connected to map alerts: {self.scope['user'].username}")
+    
+    async def disconnect(self, close_code):
+        # Leave the map alerts group
+        if hasattr(self, 'group_name'):
+            await self.channel_layer.group_discard(self.group_name, self.channel_name)
+        await super().disconnect(close_code)
+    
+    @database_sync_to_async
+    def get_map_alerts(self):
+        """Get all active alerts with location data for map"""
+        alerts = PanicAlert.objects.filter(
+            status__in=['active', 'acknowledged', 'responding'],
+            latitude__isnull=False,
+            longitude__isnull=False
+        ).select_related('user', 'assigned_operator').order_by('-created_at')
+        
+        alerts_data = []
+        for alert in alerts:
+            alert_data = {
+                'id': str(alert.id),
+                'user': alert.user.username,
+                'status': alert.status,
+                'alert_type': alert.alert_type,
+                'priority': alert.priority,
+                'latitude': float(alert.latitude),
+                'longitude': float(alert.longitude),
+                'accuracy': alert.location_accuracy,
+                'address': alert.address,
+                'created_at': alert.created_at.isoformat(),
+                'updated_at': alert.updated_at.isoformat(),
+                'assigned_operator': alert.assigned_operator.username if alert.assigned_operator else None,
+                'duration_seconds': (timezone.now() - alert.created_at).total_seconds()
+            }
+            alerts_data.append(alert_data)
+        
+        return alerts_data
+    
+    async def send_map_alerts(self):
+        """Send map alerts to client"""
+        try:
+            alerts_data = await self.get_map_alerts()
+            await self.send(text_data=json.dumps({
+                'type': 'map_alerts',
+                'alerts': alerts_data,
+                'count': len(alerts_data),
+                'timestamp': timezone.now().isoformat()
+            }))
+        except Exception as e:
+            logger.error(f"Error sending map alerts: {e}")
+            await self.send_error("Failed to fetch map alerts")
+    
+    async def receive(self, text_data):
+        """Handle incoming WebSocket messages"""
+        try:
+            data = json.loads(text_data)
+            message_type = data.get('type')
+            
+            if message_type == 'get_map_alerts':
+                await self.send_map_alerts()
+            else:
+                await self.send_error(f"Unknown message type: {message_type}")
+                
+        except json.JSONDecodeError:
+            await self.send_error("Invalid JSON message")
+        except Exception as e:
+            logger.error(f"Error in MapAlertsConsumer.receive: {e}")
+            await self.send_error("Internal server error")
+    
+    # Group message handlers
+    async def map_alert_update(self, event):
+        """Handle map alert update broadcast"""
+        await self.send(text_data=json.dumps({
+            'type': 'alert_update',
+            'alert': event['alert'],
+            'timestamp': event.get('timestamp', timezone.now().isoformat())
+        }))
+
+
 class ChatConsumer(BaseWebSocketConsumer):
     """Consumer for chat between user and operator"""
     
@@ -639,4 +765,27 @@ def broadcast_dashboard_stats_update(stats):
     async_to_sync(channel_layer.group_send)('admin_dashboard', {
         'type': 'stats_update',
         'stats': stats
+    })
+
+def send_user_notification(user_id, message, title=None, notification_type='info'):
+    """Send notification to a specific user"""
+    channel_layer = get_channel_layer()
+    payload = {
+        'type': 'user_notification',
+        'message': message,
+        'notification_type': notification_type,
+        'timestamp': timezone.now().isoformat()
+    }
+    if title:
+        payload['title'] = title
+    
+    async_to_sync(channel_layer.group_send)(f'user_{user_id}', payload)
+
+def broadcast_map_alert_update(alert_data):
+    """Broadcast alert update to map channel for all admins"""
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)('map_alerts', {
+        'type': 'map_alert_update',
+        'alert': alert_data,
+        'timestamp': timezone.now().isoformat()
     })

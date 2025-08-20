@@ -19,4 +19,7 @@ websocket_urlpatterns = [
     
     # Chat WebSocket - Two-way communication between user and operator
     re_path(r'ws/chat/(?P<alert_id>[0-9a-f-]+)/$', consumers.ChatConsumer.as_asgi()),
+    
+    # Map WebSocket - Real-time map updates for admin dashboard
+    re_path(r'ws/map/alerts/$', consumers.MapAlertsConsumer.as_asgi()),
 ]

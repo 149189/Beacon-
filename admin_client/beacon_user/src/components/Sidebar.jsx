@@ -12,7 +12,8 @@ import {
     Home,
     UserCheck,
     MessageCircle,
-    Activity
+    Activity,
+    Map
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, onToggle, activeTab, onTabChange }) => {
@@ -20,6 +21,7 @@ const Sidebar = ({ isOpen, onToggle, activeTab, onTabChange }) => {
 
     const navigation = [
         { id: 'overview', label: 'Dashboard', icon: Home, href: '/dashboard' },
+        { id: 'map', label: 'Alert Map', icon: Map, href: '/map', isMapLink: true },
         { id: 'users', label: 'User Management', icon: UserCheck, href: '/dashboard/users' },
         { id: 'messages', label: 'Message Management', icon: MessageCircle, href: '/dashboard/messages' },
         { id: 'analytics', label: 'Analytics', icon: BarChart3, href: '/dashboard/analytics' },
@@ -75,7 +77,13 @@ const Sidebar = ({ isOpen, onToggle, activeTab, onTabChange }) => {
                                     variant={activeTab === item.id ? 'secondary' : 'ghost'}
                                     className={`w-full justify-start ${activeTab === item.id ? 'bg-secondary text-secondary-foreground' : 'hover:bg-gray-100'
                                         }`}
-                                    onClick={() => onTabChange(item.id)}
+                                    onClick={() => {
+                                        if (item.isMapLink) {
+                                            window.location.href = item.href;
+                                        } else {
+                                            onTabChange(item.id);
+                                        }
+                                    }}
                                 >
                                     <Icon className="w-5 h-5 mr-3" />
                                     {item.label}

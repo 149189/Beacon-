@@ -90,9 +90,6 @@ class PanicService {
 
       // Get current location
       final location = await LocationService.instance.getCurrentLocation();
-      if (location == null) {
-        throw Exception('Unable to get current location');
-      }
 
       // Prepare alert data
       final alertData = {
@@ -115,7 +112,7 @@ class PanicService {
         data: alertData,
       );
 
-      if (response != null && response['success'] == true) {
+      if (response['success'] == true) {
         final alertId = response['alert_id'];
 
         // Create local alert object
@@ -166,7 +163,6 @@ class PanicService {
 
     try {
       final location = await LocationService.instance.getCurrentLocation();
-      if (location == null) return;
 
       final locationData = {
         'latitude': location.latitude,
@@ -203,7 +199,7 @@ class PanicService {
       final endpoint = AppConstants.getCancelEndpoint(_activeAlert!.id);
       final response = await ApiService.instance.post(endpoint);
 
-      if (response != null && response['success'] == true) {
+      if (response['success'] == true) {
         // Update local alert
         _activeAlert = _activeAlert!.copyWith(
           status: AppConstants.canceledStatus,
@@ -237,11 +233,9 @@ class PanicService {
       final response =
           await ApiService.instance.get(AppConstants.alertsEndpoint);
 
-      if (response != null) {
-        final List<dynamic> alertsJson =
-            response is List ? response : response['results'] ?? [];
-        return alertsJson.map((json) => PanicAlert.fromJson(json)).toList();
-      }
+      final List<dynamic> alertsJson =
+          response is List ? response : response['results'] ?? [];
+      return alertsJson.map((json) => PanicAlert.fromJson(json)).toList();
 
       return [];
     } catch (e) {
@@ -418,7 +412,6 @@ class PanicService {
 
     try {
       final location = await LocationService.instance.getCurrentLocation();
-      if (location == null) return;
 
       // Send location update via WebSocket for real-time tracking
       final locationData = {

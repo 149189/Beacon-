@@ -1,0 +1,64 @@
+version: "3.9"
+
+services:
+  server:
+    build:
+      context: ./server/beacon_server
+      dockerfile: Dockerfile
+    container_name: beacon_server
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./server/beacon_server:/app
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=beacon_db
+      - DB_USER=beacon_user
+      - DB_PASSWORD=beacon_pass
+    command: >
+      sh -c "pip install -r requirements.txt &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  admin_client:
+    build:
+      context: ./admin_client/beacon_user
+      dockerfile: Dockerfile
+    container_name: beacon_admin
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=production
+    command: >
+      sh -c "npm run build &&
+             npx serve -s dist -l 5173"
+
+  companion:
+    build:
+      context: ./companion
+      dockerfile: Dockerfile
+    container_name: beacon_companion
+    ports:
+      - "8080:8080"
+    command: >
+      flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0
+
+  db:
+    image: mysql:8.0
+    container_name: beacon_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: beacon_db
+      MYSQL_USER: beacon_user
+      MYSQL_PASSWORD: beacon_pass
+    ports:
+      - "3307:3306" # exposed for debugging; Django connects via internal hostname
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:

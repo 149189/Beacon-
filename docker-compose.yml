@@ -1,25 +1,28 @@
-version: "3.9"
-
 services:
   server:
     build:
       context: ./server/beacon_server
       dockerfile: Dockerfile
+    image: beacon_server:latest
     container_name: beacon_server
     ports:
       - "8000:8000"
     volumes:
       - ./server/beacon_server:/app
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - DB_HOST=db
       - DB_PORT=3306
       - DB_NAME=beacon_db
-      - DB_USER=beacon_user
-      - DB_PASSWORD=beacon_pass
+      - DB_USER=root
+      - DB_PASSWORD=Kaustubh@149
+      - USE_SQLITE=False
     command: >
       sh -c "pip install -r requirements.txt &&
+             python docker_setup.py &&
+             python manage.py makemigrations &&
              python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
 
@@ -27,44 +30,66 @@ services:
     build:
       context: ./server/location_server
       dockerfile: Dockerfile
+    image: beacon_location_server:latest
     container_name: location_server
     ports:
-      - "9000:9000"
+      - "3001:3001"
     volumes:
       - ./server/location_server:/app
       - /app/node_modules
-    command: nodemon --legacy-watch server.js
+    environment:
+      - PORT=3001
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=beacon_db
+      - DB_USER=root
+      - DB_PASSWORD=Kaustubh@149
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "npm install && nodemon --legacy-watch server.js"
 
   admin_client:
     build:
       context: ./admin_client/beacon_user
       dockerfile: Dockerfile
+    image: beacon_admin_client:latest
     container_name: beacon_admin
     ports:
       - "5173:5173"
     environment:
       - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8000
+      - VITE_LOCATION_SERVER_URL=http://localhost:3001
     volumes:
       - ./admin_client/beacon_user:/app
       - /app/node_modules
-    command: npm run dev
+    depends_on:
+      - server
+      - location_server
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
 
   companion:
     build:
       context: ./companion
       dockerfile: Dockerfile
+    image: beacon_companion:latest
     container_name: beacon_companion
     ports:
       - "8080:8080"
+    environment:
+      - FLUTTER_WEB_PORT=8080
+    volumes:
+      - ./companion:/app
     command: >
-      flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0
+      sh -c "flutter pub get && flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0"
 
   db:
     image: mysql:8.0
     container_name: beacon_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_ROOT_PASSWORD: Kaustubh@149
       MYSQL_DATABASE: beacon_db
       MYSQL_USER: root
       MYSQL_PASSWORD: Kaustubh@149
@@ -72,6 +97,11 @@ services:
       - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pKaustubh@149"]
+      timeout: 20s
+      retries: 10
+      start_period: 30s
 
 volumes:
   db_data:

@@ -47,6 +47,18 @@ urlpatterns = [
     path('alerts/<uuid:alert_id>/locations/', views.AlertLocationListView.as_view(), name='alert-location-list'),
     path('alerts/<uuid:alert_id>/media/', views.AlertMediaListView.as_view(), name='alert-media-list'),
     
+    # ======================== COMPANION APP ENDPOINTS ========================
+    # These endpoints are required for the Flutter companion app to function
+    
+    # Panic alert creation (mobile app)
+    path('panic/create/', views.create_panic_alert, name='create-panic-alert-mobile'),
+    
+    # Alert location updates (mobile app)
+    path('alerts/<uuid:alert_id>/location/', views.update_alert_location, name='update-alert-location-mobile'),
+    
+    # Alert listing and management (mobile app)
+    path('alerts/', views.PanicAlertListView.as_view(), name='alert-list-mobile'),
+    
     # Emergency contacts
     path('emergency-contacts/', views.EmergencyContactListView.as_view(), name='emergency-contact-list'),
     path('emergency-contacts/<int:pk>/', views.EmergencyContactDetailView.as_view(), name='emergency-contact-detail'),

@@ -205,6 +205,21 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5178",
     "http://127.0.0.1:5179",
     "http://127.0.0.1:5180",
+    
+    # ======================== FLUTTER COMPANION APP SUPPORT ========================
+    # Flutter web default ports
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+    "http://localhost:3002",
+    "http://127.0.0.1:3002",
+    
+    # Flutter web development ports
+    "http://localhost:4000",
+    "http://127.0.0.1:4000",
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
 ]
 
 # For development, also allow all localhost origins (more permissive)
@@ -307,6 +322,31 @@ WEBSOCKET_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5173',
     'ws://localhost:8000',
     'ws://127.0.0.1:8000',
+    
+    # ======================== FLUTTER COMPANION APP SUPPORT ========================
+    # Flutter web WebSocket origins
+    'ws://localhost:8080',
+    'ws://127.0.0.1:8080',
+    'ws://localhost:3001',
+    'ws://127.0.0.1:3001',
+    'ws://localhost:3002',
+    'ws://127.0.0.1:3002',
+    'ws://localhost:4000',
+    'ws://127.0.0.1:4000',
+    'ws://localhost:5000',
+    'ws://127.0.0.1:5000',
+    
+    # Flutter web HTTP origins for WebSocket upgrade
+    'http://localhost:8080',
+    'http://127.0.0.1:8080',
+    'http://localhost:3001',
+    'http://127.0.0.1:3001',
+    'http://localhost:3002',
+    'http://127.0.0.1:3002',
+    'http://localhost:4000',
+    'http://127.0.0.1:4000',
+    'http://localhost:5000',
+    'http://127.0.0.1:5000',
 ]
 
 if DEBUG:
@@ -315,4 +355,14 @@ if DEBUG:
         'ws://127.0.0.1:*',
         'http://localhost:*',
         'http://127.0.0.1:*',
+        
+        # Additional Flutter development ports in debug mode
+        'ws://localhost:8080',
+        'ws://127.0.0.1:8080',
+        'ws://localhost:3001',
+        'ws://127.0.0.1:3001',
+        'http://localhost:8080',
+        'http://127.0.0.1:8080',
+        'http://localhost:3001',
+        'http://127.0.0.1:3001',
     ])

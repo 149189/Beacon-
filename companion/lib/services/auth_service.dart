@@ -21,7 +21,13 @@ class AuthService {
   Future<void> initialize() async {
     if (_initialized) return;
     try {
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = await SharedPreferences.getInstance().timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {
+          debugPrint('AuthService: SharedPreferences timeout, using defaults');
+          return SharedPreferences.getInstance();
+        },
+      );
       _accessToken = prefs.getString('access_token');
       _refreshToken = prefs.getString('refresh_token');
       final userStr = prefs.getString('current_user');
@@ -32,6 +38,8 @@ class AuthService {
       debugPrint('AuthService: initialized');
     } catch (e) {
       debugPrint('AuthService: initialization failed: $e');
+      // Set as initialized even if failed to prevent infinite retries
+      _initialized = true;
     }
   }
 

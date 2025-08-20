@@ -96,27 +96,35 @@ class _AmraThemeAppState extends State<AmraThemeApp>
 
   Future<void> _initializeApp() async {
     try {
-      // Request necessary permissions
-      await _requestPermissions();
-
-      // Initialize services
+      // Initialize essential services first (non-blocking)
       await AuthService.instance.initialize();
+      
+      // Request permissions and initialize other services in background
+      _initializeBackgroundServices();
+    } catch (e) {
+      debugPrint('Error initializing app: $e');
+    }
+  }
+
+  Future<void> _initializeBackgroundServices() async {
+    try {
+      // Request permissions in background
+      await _requestPermissions();
+      
+      // Initialize non-essential services
       await LocationService.instance.initialize();
       await PanicService.instance.initialize();
     } catch (e) {
-      debugPrint('Error initializing app: $e');
+      debugPrint('Error initializing background services: $e');
     }
   }
 
   Future<void> _requestPermissions() async {
     final permissions = [
       Permission.location,
-      Permission.locationAlways,
       Permission.camera,
       Permission.microphone,
-      Permission.storage,
       Permission.notification,
-      Permission.phone,
     ];
 
     for (final permission in permissions) {
@@ -139,8 +147,30 @@ class _PlaceholderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: const Center(child: CircularProgressIndicator()),
+      appBar: AppBar(
+        title: Text(title),
+        backgroundColor: AppConstants.primaryColor,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.security,
+              size: 64,
+              color: AppConstants.primaryColor,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Loading $title...',
+              style: const TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 24),
+            const CircularProgressIndicator(),
+          ],
+        ),
+      ),
       floatingActionButton: const DebugFloatingActionButton(),
     );
   }

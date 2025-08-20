@@ -1,13 +1,33 @@
-ddc_module_loader.js:1015 DDC is about to load 1/2 scripts with pool size = 1000
-ddc_module_loader.js:1015 DDC is about to load 530/530 scripts with pool size = 1000
-(index):1 <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
- This app is linked to the debug service: ws://127.0.0.1:54509/LREvEEmTkvM=/ws
-ddc_module_loader.js:1583 Starting application from main method in: org-dartlang-app:/web_entrypoint.dart.
+Enter your choice (1 or 2): 2
+❌ Connection failed: 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO)
 
+Starting Django Backend Server with MySQL...
+Waiting for Django server to start...
+Starting React Frontend Server...
 
+Starting Location Server...
 
-Deprecated feature used
-Intl.v8BreakIterator is deprecated. Please use Intl.Segmenter instead.
+: NO)
 
-1 source
-dart_sdk.js:239537
+Starting Django Backend Server with MySQL...
+Waiting for Django server to start...
+Starting React Frontend Server...
+
+Starting Location Server...
+
+All services are starting...
+
+Django Backend: http://localhost:8000
+All services are starting...
+
+Django Backend: http://localhost:8000
+Django Backend: http://localhost:8000
+Django Admin: http://localhost:8000/admin
+Django Admin: http://localhost:8000/admin
+React Frontend: http://localhost:5173
+Location Server: http://localhost:3001
+
+Database: MySQL (beacon_db)
+Demo Credentials:
+Admin: username=admin, password=admin123
+Demo Users: username=kaustubh, password=demo123

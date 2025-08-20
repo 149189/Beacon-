@@ -1,13 +1,13 @@
-INFO Configuring endpoint tcp:port=8000:interface=127.0.0.1
-INFO Listening on TCP address 127.0.0.1:8000
-INFO HTTP GET /api/health/ 200 [0.04, 127.0.0.1:51647]
-INFO HTTP GET /api/auth/messages/?limit=10 200 [0.09, 127.0.0.1:51650]
-INFO HTTP GET /api/auth/notifications/ 200 [0.09, 127.0.0.1:51651]
-INFO HTTP GET /api/auth/users/?online_only=true 200 [0.11, 127.0.0.1:51649]
-INFO HTTP GET /api/auth/dashboard/stats/ 200 [0.11, 127.0.0.1:51648]
-INFO HTTP GET /api/health/ 200 [0.05, 127.0.0.1:51648]
-WARNING Unauthorized: /api/auth/users/
-WARNING Unauthorized: /api/auth/dashboard/stats/
-WARNING HTTP GET /api/auth/users/?online_only=true 401 [0.12, 127.0.0.1:51651]
-WARNING HTTP GET /api/auth/dashboard/stats/ 401 [0.12, 127.0.0.1:51649]
-WARNING Unauthorized: /api/auth/messages/
+ddc_module_loader.js:1015 DDC is about to load 1/2 scripts with pool size = 1000
+ddc_module_loader.js:1015 DDC is about to load 530/530 scripts with pool size = 1000
+(index):1 <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
+ This app is linked to the debug service: ws://127.0.0.1:54509/LREvEEmTkvM=/ws
+ddc_module_loader.js:1583 Starting application from main method in: org-dartlang-app:/web_entrypoint.dart.
+
+
+
+Deprecated feature used
+Intl.v8BreakIterator is deprecated. Please use Intl.Segmenter instead.
+
+1 source
+dart_sdk.js:239537

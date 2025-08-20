@@ -6,6 +6,7 @@ import ToastProvider from './components/Toast';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import MapView from './pages/MapView';
+import LocationTracking from './components/LocationTracking';
 import './index.css';
 
 // Protected Route Component
@@ -55,6 +56,14 @@ const AppContent = () => {
                         element={
                             <ProtectedRoute>
                                 <MapView />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/location"
+                        element={
+                            <ProtectedRoute>
+                                <LocationTracking />
                             </ProtectedRoute>
                         }
                     />

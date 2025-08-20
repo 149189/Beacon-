@@ -13,7 +13,8 @@ import {
     UserCheck,
     MessageCircle,
     Activity,
-    Map
+    Map,
+    Navigation
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, onToggle, activeTab, onTabChange }) => {
@@ -22,6 +23,7 @@ const Sidebar = ({ isOpen, onToggle, activeTab, onTabChange }) => {
     const navigation = [
         { id: 'overview', label: 'Dashboard', icon: Home, href: '/dashboard' },
         { id: 'map', label: 'Alert Map', icon: Map, href: '/map', isMapLink: true },
+        { id: 'location', label: 'Location Tracking', icon: Navigation, href: '/location', isMapLink: true },
         { id: 'users', label: 'User Management', icon: UserCheck, href: '/dashboard/users' },
         { id: 'messages', label: 'Message Management', icon: MessageCircle, href: '/dashboard/messages' },
         { id: 'analytics', label: 'Analytics', icon: BarChart3, href: '/dashboard/analytics' },

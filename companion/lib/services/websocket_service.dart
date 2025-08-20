@@ -98,8 +98,6 @@ class WebSocketService {
           .replace(queryParameters: {'token': token});
 
       _userChannel = WebSocketChannel.connect(uri);
-
-      await _userChannel!.ready;
       _setConnectionState(WebSocketConnectionState.connected);
       _reconnectAttempts = 0;
 
@@ -130,7 +128,6 @@ class WebSocketService {
           .replace(queryParameters: {'token': token});
 
       _alertsChannel = WebSocketChannel.connect(uri);
-      await _alertsChannel!.ready;
 
       // Listen for alert-specific messages
       _alertsChannel!.stream.listen(
@@ -157,7 +154,6 @@ class WebSocketService {
           .replace(queryParameters: {'token': token});
 
       _locationChannel = WebSocketChannel.connect(uri);
-      await _locationChannel!.ready;
 
       // Listen for location messages
       _locationChannel!.stream.listen(
@@ -185,7 +181,6 @@ class WebSocketService {
           .replace(queryParameters: {'token': token});
 
       _chatChannel = WebSocketChannel.connect(uri);
-      await _chatChannel!.ready;
 
       // Listen for chat messages
       _chatChannel!.stream.listen(

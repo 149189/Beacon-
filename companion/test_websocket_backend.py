@@ -11,8 +11,8 @@ import requests
 from datetime import datetime
 
 # Configuration
-BASE_URL = "http://localhost:8000"
-WS_BASE_URL = "ws://localhost:8000"
+BASE_URL = "http://127.0.0.1:8000"
+WS_BASE_URL = "ws://127.0.0.1:8000"
 
 # Test user credentials (adjust as needed)
 TEST_USER = {
@@ -39,7 +39,8 @@ class WebSocketTester:
             
             if response.status_code == 200:
                 data = response.json()
-                self.access_token = data.get('access_token')
+                tokens = data.get('tokens', {})
+                self.access_token = tokens.get('access')
                 self.user_id = data.get('user', {}).get('id')
                 self.log(f"✅ Authentication successful. User ID: {self.user_id}")
                 return True
@@ -68,14 +69,14 @@ class WebSocketTester:
             }
             
             response = requests.post(
-                f"{BASE_URL}/api/alerts/",
+                f"{BASE_URL}/api/auth/panic/create/",
                 json=alert_data,
                 headers=headers
             )
             
             if response.status_code == 201:
                 data = response.json()
-                self.alert_id = data.get('id')
+                self.alert_id = data.get('alert_id')
                 self.log(f"✅ Test alert created: {self.alert_id}")
                 return True
             else:

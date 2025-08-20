@@ -234,10 +234,8 @@ class PanicService {
           await ApiService.instance.get(AppConstants.alertsEndpoint);
 
       final List<dynamic> alertsJson =
-          response is List ? response : response['results'] ?? [];
+          response is List ? response : (response['results'] ?? response['alerts'] ?? []);
       return alertsJson.map((json) => PanicAlert.fromJson(json)).toList();
-
-      return [];
     } catch (e) {
       debugPrint('PanicService: Error getting alert history: $e');
       return [];

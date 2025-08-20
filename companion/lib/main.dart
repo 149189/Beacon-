@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'screens/splash_screen.dart';
-import 'screens/login_screen.dart';
-import 'screens/home_screen.dart';
-import 'screens/panic_screen.dart';
-import 'screens/emergency_contacts_screen.dart';
-import 'screens/alert_history_screen.dart';
-import 'screens/settings_screen.dart';
+import 'package:flutter/material.dart' show Center, CircularProgressIndicator;
 import 'screens/websocket_test_screen.dart';
+import 'widgets/debug_fab.dart';
 import 'services/auth_service.dart';
 import 'services/location_service.dart';
 import 'services/panic_service.dart';
@@ -32,13 +27,13 @@ class BeaconApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
-        '/': (context) => const SplashScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/home': (context) => const HomeScreen(),
-        '/panic': (context) => const PanicScreen(),
-        '/emergency-contacts': (context) => const EmergencyContactsScreen(),
-        '/alert-history': (context) => const AlertHistoryScreen(),
-        '/settings': (context) => const SettingsScreen(),
+        '/': (context) => const _PlaceholderScreen(title: 'Splash'),
+        '/login': (context) => const _PlaceholderScreen(title: 'Login'),
+        '/home': (context) => const _PlaceholderScreen(title: 'Home'),
+        '/panic': (context) => const _PlaceholderScreen(title: 'Panic'),
+        '/emergency-contacts': (context) => const _PlaceholderScreen(title: 'Emergency Contacts'),
+        '/alert-history': (context) => const _PlaceholderScreen(title: 'Alert History'),
+        '/settings': (context) => const _PlaceholderScreen(title: 'Settings'),
         '/websocket-test': (context) => const WebSocketTestScreen(),
       },
       builder: (context, child) {
@@ -134,5 +129,19 @@ class _AmraThemeAppState extends State<AmraThemeApp>
   @override
   Widget build(BuildContext context) {
     return const BeaconApp();
+  }
+}
+
+class _PlaceholderScreen extends StatelessWidget {
+  final String title;
+  const _PlaceholderScreen({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: const Center(child: CircularProgressIndicator()),
+      floatingActionButton: const DebugFloatingActionButton(),
+    );
   }
 }

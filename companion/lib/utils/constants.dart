@@ -22,7 +22,7 @@ class AppConstants {
   
   // Panic Alert Endpoints
   static const String createPanicAlertEndpoint = '$apiBasePath/panic/create/';
-  static const String updateAlertLocationEndpoint = '$apiBasePath/alerts/{alertId}/location/';
+  static const String alertLocationEndpoint = '$apiBasePath/alerts/{alertId}/location/';
   static const String alertDetailEndpoint = '$apiBasePath/alerts/{alertId}/';
   static const String alertMediaEndpoint = '$apiBasePath/alerts/{alertId}/media/';
   static const String cancelAlertEndpoint = '$apiBasePath/alerts/{alertId}/cancel/';
@@ -190,15 +190,15 @@ class AppConstants {
   }
   
   static String getLocationEndpoint(String alertId) {
-    return alertLocationEndpoint.replaceAll('{id}', alertId);
+    return alertLocationEndpoint.replaceAll('{alertId}', alertId);
   }
   
   static String getMediaEndpoint(String alertId) {
-    return alertMediaEndpoint.replaceAll('{id}', alertId);
+    return alertMediaEndpoint.replaceAll('{alertId}', alertId);
   }
   
   static String getCancelEndpoint(String alertId) {
-    return cancelAlertEndpoint.replaceAll('{id}', alertId);
+    return cancelAlertEndpoint.replaceAll('{alertId}', alertId);
   }
   
   static String getPriorityDisplayName(int priority) {

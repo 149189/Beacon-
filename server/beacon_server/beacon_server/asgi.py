@@ -22,12 +22,15 @@ django_asgi_app = get_asgi_application()
 
 # Import after django setup
 from beacon_auth.routing import websocket_urlpatterns
+from beacon_auth.middleware import QueryStringJWTAuthMiddleware
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
     "websocket": AllowedHostsOriginValidator(
-        AuthMiddlewareStack(
-            URLRouter(websocket_urlpatterns)
+        QueryStringJWTAuthMiddleware(
+            AuthMiddlewareStack(
+                URLRouter(websocket_urlpatterns)
+            )
         )
     ),
 })

@@ -23,6 +23,18 @@ services:
              python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
 
+  location_server:
+    build:
+      context: ./server/location_server
+      dockerfile: Dockerfile
+    container_name: location_server
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./server/location_server:/app
+      - /app/node_modules
+    command: nodemon --legacy-watch server.js
+
   admin_client:
     build:
       context: ./admin_client/beacon_user
@@ -31,10 +43,11 @@ services:
     ports:
       - "5173:5173"
     environment:
-      - NODE_ENV=production
-    command: >
-      sh -c "npm run build &&
-             npx serve -s dist -l 5173"
+      - NODE_ENV=development
+    volumes:
+      - ./admin_client/beacon_user:/app
+      - /app/node_modules
+    command: npm run dev
 
   companion:
     build:
@@ -53,10 +66,10 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
       MYSQL_DATABASE: beacon_db
-      MYSQL_USER: beacon_user
-      MYSQL_PASSWORD: beacon_pass
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Kaustubh@149
     ports:
-      - "3307:3306" # exposed for debugging; Django connects via internal hostname
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
 

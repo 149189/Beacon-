@@ -12,8 +12,8 @@ from dotenv import load_dotenv
 def create_database():
     """Create MySQL database and user for Beacon application"""
     
-    # Load environment variables
-    load_dotenv()
+    # Load environment variables from config.env
+    load_dotenv('config.env')
     
     # Get database configuration from environment variables
     db_name = os.getenv('MYSQL_DB', 'beacon_db')
@@ -88,7 +88,7 @@ def create_database():
 def test_connection():
     """Test connection to the Beacon database"""
     
-    load_dotenv()
+    load_dotenv('config.env')
     
     db_name = os.getenv('MYSQL_DB', 'beacon_db')
     db_user = os.getenv('MYSQL_USER', 'root')

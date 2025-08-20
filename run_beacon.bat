@@ -72,6 +72,11 @@ cd server\beacon_server
 python setup_mysql.py
 
 echo.
+echo If MySQL connection failed, please check:
+echo 1. MySQL server is running
+echo 2. Credentials in config.env file
+echo 3. MySQL user has proper permissions
+echo.
 echo Starting Django Backend Server with MySQL...
 start "Django Backend (MySQL)" cmd /k "cd server\beacon_server && python manage.py runserver"
 
@@ -161,8 +166,13 @@ cd server\beacon_server
 python setup_mysql.py
 
 echo.
+echo If MySQL connection failed, please check:
+echo 1. MySQL server is running
+echo 2. Credentials in config.env file
+echo 3. MySQL user has proper permissions
+echo.
 echo Starting Django Backend Server with MySQL...
-start "Django Backend (MySQL)" cmd /k "cd server\beacon_server && python manage.py runserver"
+start "Django Backend Server (MySQL)" cmd /k "cd server\beacon_server && python manage.py runserver"
 
 echo Waiting for Django server to start...
 timeout /t 5 /nobreak > nul

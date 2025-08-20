@@ -36,6 +36,20 @@ echo ========================================
 echo Starting Beacon Admin Panel (SQLite)...
 echo ========================================
 echo.
+echo Checking dependencies...
+cd server\beacon_server
+
+echo Checking Python and Django...
+python --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Python is not installed or not in PATH
+    echo Please install Python 3.8+ and try again
+    echo.
+    pause
+    cd ..\..
+    goto menu
+)
+
 echo Starting Django Backend Server...
 start "Django Backend" cmd /k "cd server\beacon_server && python manage.py runserver"
 
@@ -43,6 +57,20 @@ echo Waiting for Django server to start...
 timeout /t 5 /nobreak > nul
 
 echo Starting React Frontend Server...
+cd ..\..\admin_client\beacon_user
+
+echo Checking Node.js and npm...
+node --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Node.js is not installed or not in PATH
+    echo Please install Node.js 16+ and try again
+    echo.
+    pause
+    cd ..\..\server\beacon_server
+    cd ..\..
+    goto menu
+)
+
 start "React Frontend" cmd /k "cd admin_client\beacon_user && npm run dev"
 
 echo.
@@ -58,6 +86,8 @@ echo Demo Users: username=kaustubh, password=demo123
 echo.
 echo Press any key to return to menu...
 pause > nul
+cd ..\..\server\beacon_server
+cd ..\..
 goto menu
 
 :admin_mysql
@@ -67,15 +97,29 @@ echo ========================================
 echo Starting Beacon Admin Panel (MySQL)...
 echo ========================================
 echo.
-echo Checking MySQL connection...
+echo Checking dependencies...
 cd server\beacon_server
+
+echo Checking Python and Django...
+python --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Python is not installed or not in PATH
+    echo Please install Python 3.8+ and try again
+    echo.
+    pause
+    cd ..\..
+    goto menu
+)
+
+echo Checking MySQL connection...
 python setup_mysql.py
 
 echo.
 echo If MySQL connection failed, please check:
-echo 1. MySQL server is running
+echo 1. MySQL server is running (check Windows Services)
 echo 2. Credentials in config.env file
 echo 3. MySQL user has proper permissions
+echo 4. Port 3306 is not blocked by firewall
 echo.
 echo Starting Django Backend Server with MySQL...
 start "Django Backend (MySQL)" cmd /k "cd server\beacon_server && python manage.py runserver"
@@ -84,6 +128,19 @@ echo Waiting for Django server to start...
 timeout /t 5 /nobreak > nul
 
 echo Starting React Frontend Server...
+cd ..\..\admin_client\beacon_user
+echo Checking Node.js and npm...
+node --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Node.js is not installed or not in PATH
+    echo Please install Node.js 16+ and try again
+    echo.
+    pause
+    cd ..\..\server\beacon_server
+    cd ..\..
+    goto menu
+)
+
 start "React Frontend" cmd /k "cd admin_client\beacon_user && npm run dev"
 
 echo.
@@ -100,6 +157,7 @@ echo Demo Users: username=kaustubh, password=demo123
 echo.
 echo Press any key to return to menu...
 pause > nul
+cd ..\..\server\beacon_server
 cd ..\..
 goto menu
 
@@ -110,7 +168,19 @@ echo ========================================
 echo Starting Beacon Location Server...
 echo ========================================
 echo.
+echo Checking dependencies...
 cd server\location_server
+
+echo Checking Node.js and npm...
+node --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Node.js is not installed or not in PATH
+    echo Please install Node.js 16+ and try again
+    echo.
+    pause
+    cd ..\..
+    goto menu
+)
 
 echo Installing dependencies...
 call npm install
@@ -133,16 +203,42 @@ echo ========================================
 echo Starting Beacon Servers with MySQL...
 echo ========================================
 echo.
-echo Starting Django Server (MySQL)...
+echo Checking dependencies...
 cd server\beacon_server
-start "Django Server" cmd /k "python manage.py runserver"
+
+echo Checking Python and Django...
+python --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Python is not installed or not in PATH
+    echo Please install Python 3.8+ and try again
+    echo.
+    pause
+    cd ..\..
+    goto menu
+)
+
+echo Starting Django Server (MySQL)...
+start "Django Server" cmd /k "cd server\beacon_server && python manage.py runserver"
 
 echo.
 echo ========================================
 echo Starting Location Server (MySQL)...
 echo ========================================
 cd ..\location_server
-start "Location Server" cmd /k "npm start"
+
+echo Checking Node.js and npm...
+node --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Node.js is not installed or not in PATH
+    echo Please install Node.js 16+ and try again
+    echo.
+    pause
+    cd ..\..\server\beacon_server
+    cd ..\..
+    goto menu
+)
+
+start "Location Server" cmd /k "cd server\location_server && npm start"
 
 echo.
 echo Both servers are starting...
@@ -151,6 +247,7 @@ echo - Location Server: http://localhost:3001
 echo.
 echo Press any key to return to menu...
 pause > nul
+cd ..\..\server\beacon_server
 cd ..\..
 goto menu
 
@@ -161,15 +258,29 @@ echo ========================================
 echo Starting All Beacon Services...
 echo ========================================
 echo.
-echo Checking MySQL connection...
+echo Checking dependencies...
 cd server\beacon_server
+
+echo Checking Python and Django...
+python --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Python is not installed or not in PATH
+    echo Please install Python 3.8+ and try again
+    echo.
+    pause
+    cd ..\..
+    goto menu
+)
+
+echo Checking MySQL connection...
 python setup_mysql.py
 
 echo.
 echo If MySQL connection failed, please check:
-echo 1. MySQL server is running
+echo 1. MySQL server is running (check Windows Services)
 echo 2. Credentials in config.env file
 echo 3. MySQL user has proper permissions
+echo 4. Port 3306 is not blocked by firewall
 echo.
 echo Starting Django Backend Server with MySQL...
 start "Django Backend Server (MySQL)" cmd /k "cd server\beacon_server && python manage.py runserver"
@@ -178,12 +289,37 @@ echo Waiting for Django server to start...
 timeout /t 5 /nobreak > nul
 
 echo Starting React Frontend Server...
+cd ..\..\admin_client\beacon_user
+echo Checking Node.js and npm...
+node --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Node.js is not installed or not in PATH
+    echo Please install Node.js 16+ and try again
+    echo.
+    pause
+    cd ..\..\server\beacon_server
+    cd ..\..
+    goto menu
+)
+
 start "React Frontend" cmd /k "cd admin_client\beacon_user && npm run dev"
 
 echo.
 echo Starting Location Server...
-cd ..\location_server
-start "Location Server" cmd /k "npm start"
+cd ..\..\server\location_server
+echo Checking Node.js for location server...
+node --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Node.js is not installed or not in PATH
+    echo Please install Node.js 16+ and try again
+    echo.
+    pause
+    cd ..\..\server\beacon_server
+    cd ..\..
+    goto menu
+)
+
+start "Location Server" cmd /k "cd server\location_server && npm start"
 
 echo.
 echo All services are starting...
@@ -200,6 +336,7 @@ echo Demo Users: username=kaustubh, password=demo123
 echo.
 echo Press any key to return to menu...
 pause > nul
+cd ..\..\server\beacon_server
 cd ..\..
 goto menu
 

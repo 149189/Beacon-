@@ -75,9 +75,11 @@ def create_database():
         print(f"❌ Error: {e}")
         print("\n🔧 Troubleshooting:")
         print("1. Make sure MySQL server is running")
-        print("2. Check your MySQL credentials in .env file")
+        print("2. Check your MySQL credentials in config.env file")
         print("3. Ensure MySQL user has CREATE privileges")
         print("4. Try connecting manually: mysql -u root -p")
+        print("5. Check if MySQL service is started in Windows Services")
+        print("6. Verify port 3306 is not blocked by firewall")
         
     finally:
         if 'connection' in locals() and connection.is_connected():

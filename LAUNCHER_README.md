@@ -53,6 +53,9 @@ This is a consolidated launcher that combines all the functionality from the pre
 - **Return to menu** - After each operation, return to main menu
 - **Clear feedback** - Shows what's happening at each step
 - **Proper directory handling** - Automatically navigates to correct directories
+- **Dependency checking** - Verifies Python, Node.js, and MySQL before starting services
+- **Enhanced error handling** - Better error messages and troubleshooting tips
+- **Automatic path correction** - Handles directory navigation automatically
 
 ## What This Replaces
 
@@ -76,3 +79,13 @@ This launcher replaces the following individual batch files:
 - Each service runs in its own command window
 - The launcher waits for user input before returning to menu
 - All paths are handled automatically
+- The launcher checks dependencies before starting services
+- If MySQL fails, you can still use SQLite by setting `USE_SQLITE=True` in `config.env`
+
+## Troubleshooting
+
+If you encounter issues:
+1. Check the `TROUBLESHOOTING_GUIDE.md` for common solutions
+2. Verify Python 3.8+ and Node.js 16+ are installed
+3. Ensure MySQL service is running (if using MySQL)
+4. Check if required ports (8000, 3001, 5173) are available

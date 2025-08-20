@@ -17,10 +17,10 @@ def wait_for_mysql(max_retries=30, delay=2):
     for attempt in range(max_retries):
         try:
             connection = pymysql.connect(
-                host=os.getenv('DB_HOST', 'db'),
-                port=int(os.getenv('DB_PORT', '3306')),
-                user=os.getenv('DB_USER', 'root'),
-                password=os.getenv('DB_PASSWORD', 'Kaustubh@149')
+                host=os.getenv('MYSQL_HOST', 'db'),
+                port=int(os.getenv('MYSQL_PORT', '3306')),
+                user=os.getenv('MYSQL_USER', 'root'),
+                password=os.getenv('MYSQL_PASSWORD', 'Kaustubh@149')
             )
             
             # Test the connection by executing a simple query
@@ -48,10 +48,10 @@ def create_database():
     
     # Get database configuration from environment variables
     db_name = os.getenv('MYSQL_DB', 'beacon_db')
-    db_user = os.getenv('DB_USER', 'root')
-    db_password = os.getenv('DB_PASSWORD', 'Kaustubh@149')
-    db_host = os.getenv('DB_HOST', 'db')
-    db_port = os.getenv('DB_PORT', '3306')
+    db_user = os.getenv('MYSQL_USER', 'root')
+    db_password = os.getenv('MYSQL_PASSWORD', 'Kaustubh@149')
+    db_host = os.getenv('MYSQL_HOST', 'db')
+    db_port = os.getenv('MYSQL_PORT', '3306')
     
     print("🚀 Beacon MySQL Database Setup (Docker)")
     print("=" * 50)

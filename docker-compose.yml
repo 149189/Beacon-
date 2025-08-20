@@ -13,11 +13,11 @@ services:
       db:
         condition: service_healthy
     environment:
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_NAME=beacon_db
-      - DB_USER=root
-      - DB_PASSWORD=Kaustubh@149
+      - MYSQL_HOST=db
+      - MYSQL_PORT=3306
+      - MYSQL_DB=beacon_db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=Kaustubh@149
       - USE_SQLITE=False
     command: >
       sh -c "pip install -r requirements.txt &&
@@ -39,11 +39,11 @@ services:
       - /app/node_modules
     environment:
       - PORT=3001
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_NAME=beacon_db
-      - DB_USER=root
-      - DB_PASSWORD=Kaustubh@149
+      - MYSQL_HOST=db
+      - MYSQL_PORT=3306
+      - MYSQL_DB=beacon_db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=Kaustubh@149
     depends_on:
       db:
         condition: service_healthy

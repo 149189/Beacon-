@@ -42,6 +42,19 @@ Beacon empowers individuals to **send an emergency signal instantly** and gives 
 
 ---
 
+## Docker Images
+
+You can pull the prebuilt images from GitHub Container Registry:
+
+```bash
+docker pull ghcr.io/149189/beacon-admin:latest
+docker pull ghcr.io/149189/beacon-user:latest
+docker pull ghcr.io/149189/beacon-companion:latest
+docker pull ghcr.io/149189/beacon-backend:latest
+docker pull ghcr.io/149189/beacon-db:latest
+docker pull ghcr.io/149189/beacon-location:latest
+```
+
 ## 📍 Project Workflow
 
 **1. User Side (Mobile App)**

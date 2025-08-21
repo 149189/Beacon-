@@ -78,7 +78,7 @@ docker pull ghcr.io/149189/beacon-location:latest
 ## 🗺️ Roadmap
 
 **MVP (v0.1 — Demand Validation)**
-- [ ] Mobile panic triggers & location streaming
+- [x] Mobile panic triggers & location streaming
 - [ ] Operator console with live incident map
 - [ ] Offline buffering & sync
 - [ ] Basic SOP templates
